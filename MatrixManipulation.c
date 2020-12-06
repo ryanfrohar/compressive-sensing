@@ -32,19 +32,34 @@ void MatSubtraction(int M,int N, int matrix1[M][N],int matrix2[M][N],int result[
 	
 	
 }
+//to check for correct contents of matrix
+void printMatrix(int m,int n, int matrix[m][n]){
+	for(int i=0;i<m;i++){
+    		for(int j=0;j<n;j++){
+			printf("%d ", matrix[i][j]);
+		}
+	printf("\n");
+	}
+}
+			
 
 
 void main(){
-	/*int arr[2][3] = {{3,2,4}, {-4,5,1}};
+	/*
+	int arr[2][3] = {{3,2,4}, {-4,5,1}};
 	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
 	int result[2][4] = {0};
 	MatMultiplication(2,3,4,arr,arr1,result);
+	printMatrix(2,4,result);
+	
 	
 	int arr[2][2] = {{4,3}, {2,1}};
 	int arr1[2][2] = {{1,2},{1,1}};
 	int res[2][2] = {0};
 	MatSubtraction(2,2,arr,arr1,res);
+	printMatrix(2,2,res);
 	*/
+	
 }
 
 
