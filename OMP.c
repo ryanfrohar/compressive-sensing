@@ -181,6 +181,7 @@ void Transpose(int inputMatrix[M][N], int TransposeMatrix[N][M]){
 
 
 void testMarko(){
+	/**
 	int arr[2][3] = {{3,2,4}, {-4,5,1}};
 	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
 	int result[2][4] = {0};
@@ -194,7 +195,6 @@ void testMarko(){
 	MatSubtraction(2,2,arr,arr1,res);
 	printMatrix(2,2,res);
 	*/
-	
 }
 
 int main(){
