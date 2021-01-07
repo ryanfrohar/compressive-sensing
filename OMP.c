@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include "math.h"
 
+#define M 3 // Amount of measurements taken
+#define N 5 // Amount of samples
+#define S 6 // Sparsity
+#define amount_Found 16 // amount of elements found
+#define iterations 11 // number of iterations
+int Matrix[M][N]; //Matrix composed of the measurements and samples
+
 void calc_correlation(int N,int correlation[N],int norms[N],float inner_sum[N]){
 	for(int i = 0; i<N; i++){
 		correlation[i] = fabs(inner_sum[i]/norms[i]);
@@ -158,10 +165,22 @@ float SNR( float normSparse, float maxSparseIndexes, int length)
 	return snr;
 }
 
+/*
+Takes a matrix and prints the transpose of the matrix
+*/
+
+void Transpose(int inputMatrix[M][N], int TransposeMatrix[N][M]){
+
+    int i, j;
+    for (i = 0; i < N; i++){
+        for(j = 0; j < M; j++){
+            TransposeMatrix[i][j] = inputMatrix[j][i];
+        }
+    }
+}
 
 
-void main(){
-	/*
+void testMarko(){
 	int arr[2][3] = {{3,2,4}, {-4,5,1}};
 	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
 	int result[2][4] = {0};
@@ -177,5 +196,29 @@ void main(){
 	*/
 	
 }
+
+int main(){
+	// populates the starting matrix with random values
+	for(int x = 0; x < M; x++){
+		for(int y = 0; y < N; y++){
+			Matrix[x][y] = rand()%100; // randomizes the values being filled with up to 100
+			printf("%d ", Matrix[x][y]); // prints the input matrix
+		}
+		printf("\n");
+	}
+	printf("\n");
+	int B[N][M], i, j;
+	Transpose(Matrix,B); //calls the transpose function
+    
+	//prints the transpose matrix
+	for(i = 0; i < N; i++){
+		for(j = 0; j < M; j++){
+			printf("%d ", B[i][j]);
+		}
+		printf("\n");
+	}
+	return 0; 
+}
+
 
 
