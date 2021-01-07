@@ -1,4 +1,7 @@
-#include<stdio.h>
+#include <stdio.h>
+#include "stdio.h"
+#include <stdlib.h>
+#include "math.h"
 /*
  Multiplies two matrixes into result vector, number of columns of first matrix must equal 
 number of rows of second matrix for it to work mathematically
@@ -54,6 +57,16 @@ int max_index(float *array, int size){
 	}
 	return(indexMax);
 }	
+
+float norm_Col(float *array, int m, int n, int C){
+	float sum = 0;
+	float *fixed = array + C ;
+	for (int i = 0;i < m;i++){
+		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);
+	}
+	sum=sqrt(sum);
+	return sum;
+}
 
 
 void main(){
