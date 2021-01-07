@@ -82,6 +82,7 @@ float norm_Col(float *array, int m, int n, int C){
 	sum=sqrt(sum);
 	return sum;
 }
+
 void union(int *vec, int newval) {
 	// Using this function values of index are sorted and there is no need to check for repitition
 	for (int i = 0;i<number_of_finded;i++){
@@ -93,6 +94,26 @@ void union(int *vec, int newval) {
 	*(vec + number_of_finded) = newval; 
 	number_of_finded++;
 	bubbleSort(vec, number_of_finded);
+	return;
+}
+
+void swap(int *xp, int *yp){
+	int temp = *xp;
+	*xp = *yp;
+	*yp = temp;
+	return;
+}
+
+void bubbleSort(int *arr, int n){
+	int i, j;
+	for (i = 0; i < n - 1; i++){
+		// Last i elements are already in place
+		for (j = 0; j < n - i - 1; j++){
+			if (arr[j] > arr[j + 1]){
+				swap(&arr[j], &arr[j + 1]);
+			}
+		}
+	}
 	return;
 }
 
