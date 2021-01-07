@@ -2,10 +2,18 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include "math.h"
+
+void calc_correlation(int N,int correlation[N],int norms[N],float inner_sum[N]){
+	for(int i = 0; i<N; i++){
+		correlation[i] = fabs(inner_sum[i]/norms[i]);
+	}
+}
+
 /*
  Multiplies two matrixes into result vector, number of columns of first matrix must equal 
 number of rows of second matrix for it to work mathematically
 */
+
 void MatMultiplication(int M,int N,int n,int matrix1[M][N], int matrix2[N][n], int result[M][n]){
 	int i,j,k;
 	for(i=0;i<M;i++){
