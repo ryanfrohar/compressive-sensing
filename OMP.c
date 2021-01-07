@@ -1,4 +1,7 @@
-#include<stdio.h>
+#include <stdio.h>
+#include "stdio.h"
+#include <stdlib.h>
+#include "math.h"
 /*
  Multiplies two matrixes into result vector, number of columns of first matrix must equal 
 number of rows of second matrix for it to work mathematically
@@ -41,7 +44,42 @@ void printMatrix(int m,int n, int matrix[m][n]){
 	printf("\n");
 	}
 }
-			
+		
+int max_index(float *array, int size){
+	int indexMax = 0;
+	float max = *(vector + indexMax);
+	for (int i = 0; i < size; i++){
+		if (*(vector + i) > max)
+		{
+			max = *(vector + i);
+			indexMax = i;
+		}
+	}
+	return(indexMax);
+}	
+
+float norm_Col(float *array, int m, int n, int C){
+	float sum = 0;
+	float *fixed = array + C ;
+	for (int i = 0;i < m;i++){
+		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);
+	}
+	sum=sqrt(sum);
+	return sum;
+}
+void union(int *vec, int newval) {
+	// Using this function values of index are sorted and there is no need to check for repitition
+	for (int i = 0;i<number_of_finded;i++){
+		if (*(vec + i) == newval){ 
+			//Ignore if repetition
+			return;
+		}
+	}
+	*(vec + number_of_finded) = newval; 
+	number_of_finded++;
+	bubbleSort(vec, number_of_finded);
+	return;
+}
 
 
 void main(){
