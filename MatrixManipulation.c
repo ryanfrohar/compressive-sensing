@@ -41,7 +41,19 @@ void printMatrix(int m,int n, int matrix[m][n]){
 	printf("\n");
 	}
 }
-			
+		
+int max_index(float *array, int size){
+	int indexMax = 0;
+	float max = *(vector + indexMax);
+	for (int i = 0; i < size; i++){
+		if (*(vector + i) > max)
+		{
+			max = *(vector + i);
+			indexMax = i;
+		}
+	}
+	return(indexMax);
+}	
 
 
 void main(){
