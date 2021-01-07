@@ -2,10 +2,18 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include "math.h"
+
+void calc_correlation(int N,int correlation[N],int norms[N],float inner_sum[N]){
+	for(int i = 0; i<N; i++){
+		correlation[i] = fabs(inner_sum[i]/norms[i]);
+	}
+}
+
 /*
  Multiplies two matrixes into result vector, number of columns of first matrix must equal 
 number of rows of second matrix for it to work mathematically
 */
+
 void MatMultiplication(int M,int N,int n,int matrix1[M][N], int matrix2[N][n], int result[M][n]){
 	int i,j,k;
 	for(i=0;i<M;i++){
@@ -80,6 +88,76 @@ void union(int *vec, int newval) {
 	bubbleSort(vec, number_of_finded);
 	return;
 }
+
+/**
+
+@Ross Matthew
+Function to return inner product of a specific column of a matrix and a row vector.
+
+matrix: 2x2 matrix containing float values. (float)
+vector: 2x1 vector containing float values. (float)
+matrixRows: Number of rows in the matrix being used. (int)
+matrixColumns: Number of columns in the matrix being used. Same as the vector size. (int)
+mulColumn: Index of the column being multiplied in the matrix. (int)
+
+**/
+
+float innerColMul(float matrix, float vector, int matrixRows, int matrixColumns, int mulColumn)
+{
+	float total = 0;  // Used to store the total product value of the multiplication
+	
+	// Loop to multiply all elements of the matrix's selected column by the vector's elements
+	for(int i=0; i<M ; i++) {
+		total = total + (matrix[i][mulColumn] * vector[i]);
+	}
+	
+	return total;
+}
+
+/**
+
+@Ross Matthew
+Function to calculate the Mean Squared Error.
+Takes sparse signal and compares it to the array of max signal values and outputs the deviation average.
+
+**/
+
+
+float MSE(float sparse, float maxIndexes, int length)
+{
+	float mse = 0;  // Initialize mean squared error value
+	
+	for( int i=0 ; i<length ; i++)
+	{
+		mse += (sparse[i] - maxIndexes[i]) ^ 2;  // Add the squared difference of each value in the array/vector
+	}
+	
+	return mse/length;  // return the average deviation based on the length of the entire array/vector being compared
+}
+
+/**
+
+@Ross Matthew
+Function to calculate the Sound to Noise Ratio of the signal being processed.
+The ratio is a result of the log of the sum of the MSE value of the sparse signal and the array of max signal values in the sparse signal.
+
+**/
+
+float SNR( float normSparse, float maxSparseIndexes, int length)
+{
+	float signal = 0;  // Initialize signal, which is the sum of all the squared normalized sparse signal values
+	float snr = 0;  // Initialized value for signal to noise ratio
+	float mse = MSE(normSparse, maxSparseIndexes, N);  // Calculate the MSE value for the normalized sparse signal and the array of max signal values
+	
+	for( int i=0 ; i<length ; i++)
+	{
+		signal += (normSparse[i] * normSparse[i]);  // Sum the squared normalized sparse signal values
+	}
+	
+	snr = 10 * log10(signal / mse);  // Calculate SNR
+	return snr;
+}
+
 
 
 void main(){
