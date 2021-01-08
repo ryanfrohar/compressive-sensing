@@ -3,14 +3,13 @@
 #include <stdlib.h>
 #include "math.h"
 
-#define M 8 // Amount of measurements
-#define N 64 // Amount of samples
+#define M 64 // Amount of measurements
+#define N 256 // Amount of samples
 #define S 6 // Sparsity
-#define amount_Found 16 // amount of elements found
-#define iterations 11 // number of iterations
+#define amount_Found 15 // amount of elements found
 
 //ENV Variables
-int Rand_Mat[M][N]; //Matrix composed of the measurements and samples
+float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
 int NumberFound = 0;
 
 /**
@@ -37,7 +36,7 @@ float innerColMul(float vector[M], int mulColumn)
 }
 
 
-void calc_correlation(int correlation[N],int norms[N], int r[M]){
+void calc_correlation(float correlation[N],float norms[N], float r[M]){
 	float temp;
 	for(int i = 0; i<N; i++){
 		temp = innerColMul((float *) r, i);
@@ -50,7 +49,7 @@ void calc_correlation(int correlation[N],int norms[N], int r[M]){
 number of rows of second matrix for it to work mathematically
 */
 
-void MatMultiplication(int n,int matrix1[M][N], int matrix2[N][n], int result[M][n]){
+void matMultiplication(int n, float matrix1[M][N], float matrix2[N][n], float result[M][n]){
 	int i,j,k;
 	for(i=0;i<M;i++){
     		for(j=0;j<n;j++){
@@ -68,7 +67,7 @@ void MatMultiplication(int n,int matrix1[M][N], int matrix2[N][n], int result[M]
 	Subtracts two matrixes of same size into result
 
 */
-void MatSubtraction(int matrix1[M][N],int matrix2[M][N],int result[M][N]){
+void matSubtraction(int matrix1[M][N],int matrix2[M][N],int result[M][N]){
 	//matricies must be same size to subtract
 	for(int i=0;i<M;i++){
     		for(int j=0;j<N;j++){
@@ -197,7 +196,7 @@ float SNR( float normSparse[N], float maxSparseIndexes[N], int length)
 Takes a matrix and prints the transpose of the matrix
 */
 
-void transpose(int inputMatrix[M][N], int transposeMatrix[N][M]){
+void transpose(float inputMatrix[M][N], float transposeMatrix[N][M]){
 
     int i, j;
     for (i = 0; i < N; i++){
@@ -230,21 +229,81 @@ int main(){
 	for(int x = 0; x < M; x++){
 		for(int y = 0; y < N; y++){
 			Rand_Mat[x][y] = rand()%10; // randomizes the values being filled with up to 10
-			printf("%d ", Rand_Mat[x][y]); // prints the input matrix
+			//printf("%d ", Rand_Mat[x][y]); // prints the input matrix
 		}
+		//printf("\n");
+	}
+	//N=256, M=64
+	float x[N];
+	float y[M];
+	float x_hat[N];
+
+	int i;
+	int iterationCounter;
+
+	for (i = 0;i <N;i=i+1) {
+		x[i] = i/(i+10);
+		//printf("%f", x[i]);
+		//printf("\n");
+	}
+	
+	int randNum;
+	// only 6 out of N coeff of x are nonzero
+	for (i = 0;i < S;i++){
+		randNum = (int) (rand() % (N-1));
+		x[randNum] = (float)(rand() % 25);
+		if(x[randNum] < 2){
+			x[randNum] += 15;
+		}
+	}
+
+	matMultiplication(1, Rand_Mat, x, y);
+
+	//PRINTING X
+	printf("Printing Y\n");
+	for (i = 0;i <M;i=i+1) {
+		printf("%.10f", y[i]);
 		printf("\n");
 	}
-	printf("\n");
-	int B[N][M], i, j;
-	transpose(Rand_Mat, B); //calls the transpose function
-    
-	//prints the transpose matrix
-	for(i = 0; i < N; i++){
-		for(j = 0; j < M; j++){
-			printf("%d ", B[i][j]);
-		}
-		printf("\n");
+
+
+	//Beginning of OMP Algorithm
+	float r[M];
+	float norms[N];
+	float correlation[N];
+	int indexSet[N];
+
+	NumberFound=0;
+
+	for (i = 0;i < N;i++){
+		x_hat[i]= 0;
+		indexSet[i] = 999999; //Initialize with some value less than all
+		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of C
 	}
+
+	for (i = 0;i < M;i++) { //Init residual vector
+		r[i] = y[i]; //r = x;
+	}
+
+	printf("Algorim Begins \n");
+
+	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
+		calc_correlation(correlation, norms, r);
+		int maxIndex= max_index(correlation, N);
+		printf("Max Index: %d\n", maxIndex);
+		unionMat(indexSet, maxIndex);
+	}
+	
+	printf("Printing correlation\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%.10f\n", correlation[i]);
+	}
+	
+	printf("Printing index set\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%d\n", indexSet[i]);
+	}
+	
 	return 0; 
 }
 
