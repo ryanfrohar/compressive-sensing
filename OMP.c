@@ -293,6 +293,10 @@ int main(){
 		int maxIndex= max_index(correlation, N);
 		printf("Max Index: %d\n", maxIndex);
 		unionMat(indexSet, maxIndex);
+
+		float rand_Mat_Hat[M*]
+
+
 	}
 	
 	printf("Printing correlation\n");
