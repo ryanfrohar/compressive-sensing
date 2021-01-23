@@ -6,12 +6,11 @@
 #define M 64 // Amount of measurements
 #define N 256 // Amount of samples
 #define S 6 // Sparsity
-#define amount_Found 15 // amount of elements found
 
 //ENV Variables
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
 int NumberFound = 0;  // Number of max indexes found
-
+float MAX_RAND=7.0;
 /**
 
 Function to return inner product of a specific column of a matrix and a row vector.
@@ -51,12 +50,12 @@ Multiplies two matrices into result vector, number of columns of first matrix mu
 number of rows of second matrix for it to work mathematically
 
 */
-void matMultiplication(int n, float matrix1[M][N], float matrix2[N][n], float result[M][n]){
+void matMultiplication(int m, int n, int p, float matrix1[m][n], float matrix2[n][p], float result[m][p]){
 	int i,j,k;
-	for(i=0;i<M;i++){
-    		for(j=0;j<n;j++){
+	for(i=0;i<m;i++){
+    		for(j=0;j<p;j++){
         		result[i][j]=0;  // Initialize result vector values as 0
-        		for(k=0;k<N;k++){
+        		for(k=0;k<n;k++){
             			result[i][j]+=matrix1[i][k] * matrix2[k][j];  // Multiply matrix1 by matrix2 and store the value in the result vector/matrix
         		}
 			//printf("%d\n",result[i][j]);
@@ -85,10 +84,10 @@ Function to print contents of matrix.
 Used to verify that the contents are correct.
 
 */
-void printMatrix(int m,int n, int matrix[m][n]){
+void printMatrix(int m,int n, float matrix[m][n]){
 	for(int i=0;i<m;i++){
     		for(int j=0;j<n;j++){
-			printf("%d ", matrix[i][j]);  // Print all elements in the row of a matrix
+			printf("%f ", matrix[i][j]);  // Print all elements in the row of a matrix
 		}
 	printf("\n");  // Next line to print the next row
 	}
@@ -219,11 +218,11 @@ float SNR( float normSparse[N], float maxSparseIndexes[N], int length)
 Takes a matrix and prints the transpose of the matrix
 
 */
-void transpose(float inputMatrix[M][N], float transposeMatrix[N][M]){
+void transpose(int m, int n, float inputMatrix[m][n], float transposeMatrix[n][m]){
 
     int i, j;
-    for (i = 0; i < N; i++){
-        for(j = 0; j < M; j++){
+    for (i = 0; i < n; i++){
+        for(j = 0; j < m; j++){
             transposeMatrix[i][j] = inputMatrix[j][i];
         }
     }
@@ -247,23 +246,27 @@ void testMarko(){
 	*/
 }
 
+
 int main(){
+
+	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 	for(int x = 0; x < M; x++){
 		for(int y = 0; y < N; y++){
-			Rand_Mat[x][y] = rand()%10;  //Populate with random values from 0-9
+			Rand_Mat[x][y] =  (float) rand()/(float)(RAND_MAX) * MAX_RAND; //Populate with random values from 0-9
 		}
 	}
+	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
 	float x[N];
 	float y[M];
 	float x_hat[N];
 
-	int i;
+	int i, j;
 	int iterationCounter;
 
 	for (i = 0;i <N;i=i+1) {
-		x[i] = i/(i+10);  //Create a normalized vector with values all <1
+		x[i] = 0;  //Create a normalized vector with values all <1
 	}
 	
 	int randNum;
@@ -276,12 +279,12 @@ int main(){
 		}
 	}
 
-	matMultiplication(1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
+	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 
 	//PRINTING Y
-	printf("Printing Y\n");
-	for (i = 0;i <M;i=i+1) {
-		printf("%.10f", y[i]);
+	printf("Printing X\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%.10f", x[i]);
 		printf("\n");
 	}
 
@@ -306,20 +309,40 @@ int main(){
 
 	printf("Algorim Begins \n");
 
-	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<1; iterationCounter++){
 		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
 		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
 		printf("Max Index: %d\n", maxIndex);
-
 		unionMat(indexSet, maxIndex);
 
-		float rand_Mat_Hat[M*]
+		float rand_Mat_Hat[M][NumberFound];
+		float rand_Mat_Transpose[NumberFound][M];
+		float transpose_By_Y[NumberFound];
+		float rand_Mat_Squared[NumberFound][NumberFound];
+
+		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
+			for ( j = 0;j < NumberFound;j++) {
+				rand_Mat_Hat[i*NumberFound][j] = Rand_Mat[i][indexSet[j]];
+			}
+		}
+
+		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
+
+		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
+
+		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
+
+		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 
 
 
-		unionMat(indexSet, maxIndex);  //Add max to index set
+
+
+		
+
+
 	}
-	
+	/**
 	printf("Printing correlation\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("%.10f\n", correlation[i]);
@@ -329,7 +352,7 @@ int main(){
 	for (i = 0;i <N;i=i+1) {
 		printf("%d\n", indexSet[i]);
 	}
-	
+	*/
 	return 0; 
 }
 
