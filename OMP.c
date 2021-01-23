@@ -310,15 +310,14 @@ int main(){
 		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
 		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
 		printf("Max Index: %d\n", maxIndex);
-<<<<<<< HEAD
+
 		unionMat(indexSet, maxIndex);
 
 		float rand_Mat_Hat[M*]
 
 
-=======
+
 		unionMat(indexSet, maxIndex);  //Add max to index set
->>>>>>> master
 	}
 	
 	printf("Printing correlation\n");
