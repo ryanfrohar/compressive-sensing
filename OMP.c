@@ -10,108 +10,128 @@
 
 //ENV Variables
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
-int NumberFound = 0;
+int NumberFound = 0;  // Number of max indexes found
 
 /**
+
 Function to return inner product of a specific column of a matrix and a row vector.
 
-matrix: 2x2 matrix containing float values. (float)
-vector: 2x1 vector containing float values. (float)
-matrixRows: Number of rows in the matrix being used. (int)
-matrixColumns: Number of columns in the matrix being used. Same as the vector size. (int)
-mulColumn: Index of the column being multiplied in the matrix. (int)
+vector: Mx1 vector containing float values. (float)
+mulColumn: Index of the column being multiplied in the matrix by the vector. (int)
 
-**/
-
+*/
 float innerColMul(float vector[M], int mulColumn)
 {
 	float total = 0;  // Used to store the total product value of the multiplication
 	
 	// Loop to multiply all elements of the matrix's selected column by the vector's elements
 	for(int i=0; i<M ; i++) {
-		total = total + (Rand_Mat[i][mulColumn] * vector[i]);
+		total = total + (Rand_Mat[i][mulColumn] * vector[i]);  // Increment total sum value
 	}
 	
-	return total;
+	return total;  // Return total sum of the inner product multiplication
 }
 
+/**
 
-void calc_correlation(float correlation[N],float norms[N], float r[M]){
-	float temp;
+Function to calculate the correlation of normalized vector and residual vector
+
+*/
+void calc_correlation(float correlation[N], float norms[N], float r[M]){
+	float temp;  // Vector to hold inner column multiplication sum value of residual vector and a given index of random matrix
 	for(int i = 0; i<N; i++){
 		temp = innerColMul((float *) r, i);
-		correlation[i] = fabs(temp/norms[i]);
+		correlation[i] = fabs(temp/norms[i]);  // Calculate and store correlation value in the correlation array
 	}
 }
 
-/*
- Multiplies two matrixes into result vector, number of columns of first matrix must equal 
-number of rows of second matrix for it to work mathematically
-*/
+/**
 
+Multiplies two matrices into result vector, number of columns of first matrix must equal 
+number of rows of second matrix for it to work mathematically
+
+*/
 void matMultiplication(int n, float matrix1[M][N], float matrix2[N][n], float result[M][n]){
 	int i,j,k;
 	for(i=0;i<M;i++){
     		for(j=0;j<n;j++){
-        		result[i][j]=0;
+        		result[i][j]=0;  // Initialize result vector values as 0
         		for(k=0;k<N;k++){
-            			result[i][j]+=matrix1[i][k] * matrix2[k][j];
+            			result[i][j]+=matrix1[i][k] * matrix2[k][j];  // Multiply matrix1 by matrix2 and store the value in the result vector/matrix
         		}
 			//printf("%d\n",result[i][j]);
 		}
 	}
-
 }
 
-/*
-	Subtracts two matrixes of same size into result
+/**
+
+Subtracts two matrices of same size into result matrix.
+Matricies must be same size to subtract.
 
 */
 void matSubtraction(int matrix1[M][N],int matrix2[M][N],int result[M][N]){
-	//matricies must be same size to subtract
 	for(int i=0;i<M;i++){
     		for(int j=0;j<N;j++){
-			result[i][j] = matrix1[i][j] - matrix2[i][j];
+			result[i][j] = matrix1[i][j] - matrix2[i][j];  // Subtract matrix2 from matrix1 and store into result matrix
 			//printf("%d\n",result[i][j]);
 		}
-	}
-	
-	
+	}	
 }
-//to check for correct contents of matrix
+
+/**
+
+Function to print contents of matrix.
+Used to verify that the contents are correct.
+
+*/
 void printMatrix(int m,int n, int matrix[m][n]){
 	for(int i=0;i<m;i++){
     		for(int j=0;j<n;j++){
-			printf("%d ", matrix[i][j]);
+			printf("%d ", matrix[i][j]);  // Print all elements in the row of a matrix
 		}
-	printf("\n");
+	printf("\n");  // Next line to print the next row
 	}
 }
-		
+
+/**
+
+Function to locate index where the max value of an array exist
+
+*/
 int max_index(float *array, int size){
-	int indexMax = 0;
-	float max = *(array + indexMax);
+	int indexMax = 0;  //Index of the array where the max value exist
+	float max = *(array + indexMax);  //Initialize the max as the first element of the array
 	for (int i = 0; i < size; i++){
-		if (*(array + i) > max)
+		if (*(array + i) > max)  //If current index's value is greater than the stored max value
 		{
-			max = *(array + i);
-			indexMax = i;
+			max = *(array + i);  //Set current index's value as the max
+			indexMax = i;  //Update the index value where the max value exist
 		}
 	}
-	return(indexMax);
+	return(indexMax);  //Return index value of the max
 }	
 
+/**
+
+Function to calculate the norm of a column in a matrix
+
+*/
 float norm_Col(float *array, int m, int n, int C){
-	float sum = 0;
-	float *fixed = array + C ;
+	float sum = 0;  //Initialize norm sum of column value
+	float *fixed = array + C ;  //Copy a specified column from the matrix
 	for (int i = 0;i < m;i++){
-		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);
+		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);  //Increment the sum with the normaized value of each element in the specified column
 	}
-	sum=sqrt(sum);
-	return sum;
+	sum=sqrt(sum);  //Square root the summed squared values to get the norm sum
+	return sum;  //Return norm sum
 }
 
+/**
 
+Swap function that is used in the bubble sort to swap the order of array elements
+
+*/
 void swap(int *xp, int *yp){
 	int temp = *xp;
 	*xp = *yp;
@@ -119,20 +139,29 @@ void swap(int *xp, int *yp){
 	return;
 }
 
+/**
+
+Bubble sort function used to sort max index values
+
+*/
 void bubbleSort(int *arr, int n){
 	int i, j;
 	for (i = 0; i < n - 1; i++){
 		// Last i elements are already in place
 		for (j = 0; j < n - i - 1; j++){
-			if (arr[j] > arr[j + 1]){
-				swap(&arr[j], &arr[j + 1]);
+			if (arr[j] > arr[j + 1]){  //If element is larger than next element in array
+				swap(&arr[j], &arr[j + 1]);  //Swap the placement of the elements
 			}
 		}
 	}
 	return;
 }
 
+/**
 
+Function to add max indexes to the max index set
+
+*/
 void unionMat(int *vec, int newval) {
 	// Using this function values of index are sorted and there is no need to check for repitition
 	for (int i = 0;i<NumberFound;i++){
@@ -141,23 +170,18 @@ void unionMat(int *vec, int newval) {
 			return;
 		}
 	}
-	*(vec + NumberFound) = newval; 
-	NumberFound++;
-	bubbleSort(vec, NumberFound);
+	*(vec + NumberFound) = newval;  //Add max index to max index set in order according to the number of max index values which have been found
+	NumberFound++;  //Increment number of max index values which have been found
+	bubbleSort(vec, NumberFound);  //Sort to verify that max indexes are in order in the max index set
 	return;
 }
 
-
-
 /**
 
-@Ross Matthew
 Function to calculate the Mean Squared Error.
 Takes sparse signal and compares it to the array of max signal values and outputs the deviation average.
 
-**/
-
-
+*/
 float MSE(float sparse[N], float maxIndexes[N], int length)
 {
 	float mse = 0;  // Initialize mean squared error value
@@ -171,12 +195,10 @@ float MSE(float sparse[N], float maxIndexes[N], int length)
 
 /**
 
-@Ross Matthew
 Function to calculate the Sound to Noise Ratio of the signal being processed.
 The ratio is a result of the log of the sum of the MSE value of the sparse signal and the array of max signal values in the sparse signal.
 
-**/
-
+*/
 float SNR( float normSparse[N], float maxSparseIndexes[N], int length)
 {
 	float signal = 0;  // Initialize signal, which is the sum of all the squared normalized sparse signal values
@@ -192,10 +214,11 @@ float SNR( float normSparse[N], float maxSparseIndexes[N], int length)
 	return snr;
 }
 
-/*
-Takes a matrix and prints the transpose of the matrix
-*/
+/**
 
+Takes a matrix and prints the transpose of the matrix
+
+*/
 void transpose(float inputMatrix[M][N], float transposeMatrix[N][M]){
 
     int i, j;
@@ -222,17 +245,14 @@ void testMarko(){
 	MatSubtraction(2,2,arr,arr1,res);
 	printMatrix(2,2,res);
 	*/
-	
 }
 
 int main(){
 	// populates the starting matrix with random values
 	for(int x = 0; x < M; x++){
 		for(int y = 0; y < N; y++){
-			Rand_Mat[x][y] = rand()%10; // randomizes the values being filled with up to 10
-			//printf("%d ", Rand_Mat[x][y]); // prints the input matrix
+			Rand_Mat[x][y] = rand()%10;  //Populate with random values from 0-9
 		}
-		//printf("\n");
 	}
 	//N=256, M=64
 	float x[N];
@@ -243,13 +263,11 @@ int main(){
 	int iterationCounter;
 
 	for (i = 0;i <N;i=i+1) {
-		x[i] = i/(i+10);
-		//printf("%f", x[i]);
-		//printf("\n");
+		x[i] = i/(i+10);  //Create a normalized vector with values all <1
 	}
 	
 	int randNum;
-	// only 6 out of N coeff of x are nonzero
+	//Make 6 random coeff out of N coeff in normalized vector >1 with range 2>x>24
 	for (i = 0;i < S;i++){
 		randNum = (int) (rand() % (N-1));
 		x[randNum] = (float)(rand() % 25);
@@ -258,9 +276,9 @@ int main(){
 		}
 	}
 
-	matMultiplication(1, Rand_Mat, x, y);
+	matMultiplication(1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 
-	//PRINTING X
+	//PRINTING Y
 	printf("Printing Y\n");
 	for (i = 0;i <M;i=i+1) {
 		printf("%.10f", y[i]);
@@ -269,34 +287,38 @@ int main(){
 
 
 	//Beginning of OMP Algorithm
-	float r[M];
-	float norms[N];
-	float correlation[N];
-	int indexSet[N];
+	float r[M];  //Residual vector
+	float norms[N];  //Norm vector
+	float correlation[N];  //Correlation array
+	int indexSet[N];  //Index set which will contain max indexes
 
-	NumberFound=0;
+	NumberFound=0;  //Number of max indexes found
 
 	for (i = 0;i < N;i++){
 		x_hat[i]= 0;
-		indexSet[i] = 999999; //Initialize with some value less than all
+		indexSet[i] = 999999; //Initialize with some value greater than any real possible value
 		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of C
 	}
 
-	for (i = 0;i < M;i++) { //Init residual vector
-		r[i] = y[i]; //r = x;
+	for (i = 0;i < M;i++) {
+		r[i] = y[i]; //Copy the result vector y into the residual vector
 	}
 
 	printf("Algorim Begins \n");
 
 	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
-		calc_correlation(correlation, norms, r);
-		int maxIndex= max_index(correlation, N);
+		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
+		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
 		printf("Max Index: %d\n", maxIndex);
+<<<<<<< HEAD
 		unionMat(indexSet, maxIndex);
 
 		float rand_Mat_Hat[M*]
 
 
+=======
+		unionMat(indexSet, maxIndex);  //Add max to index set
+>>>>>>> master
 	}
 	
 	printf("Printing correlation\n");
