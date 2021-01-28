@@ -259,16 +259,16 @@ void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n)
 
 /* Recursive function for finding determinant of matrix. 
 n is current dimension of A[][]. */
-int determinant(int q, int A[q][q], int n) 
+float determinant(int q, float A[q][q], int n) 
 { 
-	int D = 0; // Initialize result 
+	float D = 0; // Initialize result 
 
 	// Base case : if matrix contains single element 
 	if (n == 1){
 		return A[0][0]; 
 	}
 
-	int temp[q][q]; // To store cofactors 
+	float temp[q][q]; // To store cofactors 
 
 	int sign = 1; // To store sign multiplier 
 
@@ -287,7 +287,7 @@ int determinant(int q, int A[q][q], int n)
 } 
 
 // Function to get adjoint of A[N][N] in adj[N][N]. 
-void adjoint(int q, int A[q][q],int adj[q][q]) 
+void adjoint(int q, float A[q][q], float adj[q][q]) 
 { 
 	if (q == 1) 
 	{ 
@@ -296,7 +296,8 @@ void adjoint(int q, int A[q][q],int adj[q][q])
 	} 
 
 	// temp is used to store cofactors of A[][] 
-	int sign = 1, temp[q][q]; 
+	int sign = 1;
+	float temp[q][q]; 
 
 	for (int i=0; i<q; i++) 
 	{ 
@@ -318,16 +319,17 @@ void adjoint(int q, int A[q][q],int adj[q][q])
 
 // Function to calculate and store inverse, returns false if 
 // matrix is singular 
-int inverse(int q, int A[q][q], float inverse[q][q]) 
+int inverse(int q, float A[q][q], float inverse[q][q]) 
 { 
 	// Find determinant of A[][] 
-	int det = determinant(q, A, q); 
+	float det = determinant(q, A, q); 
 	if (det == 0){ 
-		return 0; 
+		inverse[0][0]= 1/A[0][0];
+		return 1;
 	} 
 
 	// Find adjoint 
-	int adj[q][q]; 
+	float adj[q][q]; 
 	adjoint(q, A, adj); 
 
 	// Find Inverse using formula "inverse(A) = adj(A)/det(A)" 
@@ -451,6 +453,7 @@ int main(){
 		float rand_Mat_Transpose[NumberFound][M];
 		float transpose_By_Y[NumberFound];
 		float rand_Mat_Squared[NumberFound][NumberFound];
+		float
 
 		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
 			for ( j = 0;j < NumberFound;j++) {
@@ -475,6 +478,13 @@ int main(){
 		if (inverse(NumberFound, rand_Mat_Squared, inv)){
 			printMatrix(NumberFound, NumberFound, inv);
 		}
+		
+		//matMultiplication inv * transpose_By_Y = X
+		//matMultiplication rand_Mat_Hat * X = rand_Mat_Hat_By_X
+		//matSubtraction y - rand_Mat_Hat_By_X = X_Hat
+		//magnitude(X_Hat) = X_Bar
+		//x_hat[indexSet[NumberFound-1]] = X_Bar
+
 		
 
 
