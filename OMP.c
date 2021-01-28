@@ -246,7 +246,7 @@ void testMarko(){
 	*/
 }
 
-
+/**
 int main(){
 
 	//srand((unsigned int)time(NULL));
@@ -334,15 +334,10 @@ int main(){
 
 		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 
-
-
-
-
 		
 
 
 	}
-	/**
 	printf("Printing correlation\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("%.10f\n", correlation[i]);
@@ -352,9 +347,144 @@ int main(){
 	for (i = 0;i <N;i=i+1) {
 		printf("%d\n", indexSet[i]);
 	}
-	*/
+	
 	return 0; 
 }
+*/
+
+// Function to get cofactor of A[p][q] in temp[][]. n is current 
+// dimension of A[][] 
+void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n) 
+{ 
+	int i = 0, j = 0; 
+
+	// Looping for each element of the matrix 
+	for (int row = 0; row < n; row++) 
+	{ 
+		for (int col = 0; col < n; col++) 
+		{ 
+			// Copying into temporary matrix only those element 
+			// which are not in given row and column 
+			if (row != p && col != q) 
+			{ 
+				temp[i][j++] = A[row][col]; 
+
+				// Row is filled, so increase row index and 
+				// reset col index 
+				if (j == n - 1) 
+				{ 
+					j = 0; 
+					i++; 
+				} 
+			} 
+		} 
+	} 
+} 
+
+/* Recursive function for finding determinant of matrix. 
+n is current dimension of A[][]. */
+int determinant(int q, int A[q][q], int n) 
+{ 
+	int D = 0; // Initialize result 
+
+	// Base case : if matrix contains single element 
+	if (n == 1){
+		return A[0][0]; 
+	}
+
+	int temp[q][q]; // To store cofactors 
+
+	int sign = 1; // To store sign multiplier 
+
+	// Iterate for each element of first row 
+	for (int ii = 0; ii < n; ii++) 
+	{ 
+		// Getting Cofactor of A[0][f] 
+		getCofactor(q, A, temp, 0, ii, n); 
+		D += sign * A[0][ii] * determinant(q, temp, n - 1); 
+
+		// terms are to be added with alternate sign 
+		sign = -sign; 
+	} 
+
+	return D; 
+} 
+
+// Function to get adjoint of A[N][N] in adj[N][N]. 
+void adjoint(int q, int A[q][q],int adj[q][q]) 
+{ 
+	if (q == 1) 
+	{ 
+		adj[0][0] = 1; 
+		return; 
+	} 
+
+	// temp is used to store cofactors of A[][] 
+	int sign = 1, temp[q][q]; 
+
+	for (int i=0; i<q; i++) 
+	{ 
+		for (int j=0; j<q; j++) 
+		{ 
+			// Get cofactor of A[i][j] 
+			getCofactor(q, A, temp, i, j, q); 
+
+			// sign of adj[j][i] positive if sum of row 
+			// and column indexes is even. 
+			sign = ((i+j)%2==0)? 1: -1; 
+
+			// Interchanging rows and columns to get the 
+			// transpose of the cofactor matrix 
+			adj[j][i] = (sign)*(determinant(q, temp, q-1)); 
+		} 
+	} 
+} 
+
+// Function to calculate and store inverse, returns false if 
+// matrix is singular 
+int inverse(int q, int A[q][q], float inverse[q][q]) 
+{ 
+	// Find determinant of A[][] 
+	int det = determinant(q, A, q); 
+	if (det == 0){ 
+		return 0; 
+	} 
+
+	// Find adjoint 
+	int adj[q][q]; 
+	adjoint(q, A, adj); 
+
+	// Find Inverse using formula "inverse(A) = adj(A)/det(A)" 
+	for (int i=0; i<q; i++){
+		for (int j=0; j<q; j++){
+			inverse[i][j] = adj[i][j]/((float) det); 
+		}
+	}
+
+	return 1; 
+} 
+
+
+// Driver program 
+int main() 
+{ 
+	int A[4][4] = { {5, -2, 2, 7}, 
+					{1, 0, 0, 3}, 
+					{-3, 1, 5, 0}, 
+					{3, -1, -9, 4}}; 
+
+	int adj[4][4]; // To store adjoint of A[][] 
+
+	float inv[4][4]; // To store inverse of A[][] 
+
+	adjoint(4, A, adj); 
+
+	if (inverse(4, A, inv)){
+		printMatrix(4, 4, inv);
+	}
+
+	return 0; 
+} 
 
 
 
