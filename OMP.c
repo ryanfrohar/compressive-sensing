@@ -228,130 +228,6 @@ void transpose(int m, int n, float inputMatrix[m][n], float transposeMatrix[n][m
     }
 }
 
-
-void testMarko(){
-	/**
-	int arr[2][3] = {{3,2,4}, {-4,5,1}};
-	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
-	int result[2][4] = {0};
-	MatMultiplication(2,3,4,arr,arr1,result);
-	printMatrix(2,4,result);
-	
-	
-	int arr[2][2] = {{4,3}, {2,1}};
-	int arr1[2][2] = {{1,2},{1,1}};
-	int res[2][2] = {0};
-	MatSubtraction(2,2,arr,arr1,res);
-	printMatrix(2,2,res);
-	*/
-}
-
-/**
-int main(){
-
-	//srand((unsigned int)time(NULL));
-	// populates the starting matrix with random values
-	for(int x = 0; x < M; x++){
-		for(int y = 0; y < N; y++){
-			Rand_Mat[x][y] =  (float) rand()/(float)(RAND_MAX) * MAX_RAND; //Populate with random values from 0-9
-		}
-	}
-	//printMatrix(M, N, Rand_Mat);
-	//N=256, M=64
-	float x[N];
-	float y[M];
-	float x_hat[N];
-
-	int i, j;
-	int iterationCounter;
-
-	for (i = 0;i <N;i=i+1) {
-		x[i] = 0;  //Create a normalized vector with values all <1
-	}
-	
-	int randNum;
-	//Make 6 random coeff out of N coeff in normalized vector >1 with range 2>x>24
-	for (i = 0;i < S;i++){
-		randNum = (int) (rand() % (N-1));
-		x[randNum] = (float)(rand() % 25);
-		if(x[randNum] < 2){
-			x[randNum] += 15;
-		}
-	}
-
-	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
-
-	//PRINTING Y
-	printf("Printing X\n");
-	for (i = 0;i <N;i=i+1) {
-		printf("%.10f", x[i]);
-		printf("\n");
-	}
-
-
-	//Beginning of OMP Algorithm
-	float r[M];  //Residual vector
-	float norms[N];  //Norm vector
-	float correlation[N];  //Correlation array
-	int indexSet[N];  //Index set which will contain max indexes
-
-	NumberFound=0;  //Number of max indexes found
-
-	for (i = 0;i < N;i++){
-		x_hat[i]= 0;
-		indexSet[i] = 999999; //Initialize with some value greater than any real possible value
-		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of C
-	}
-
-	for (i = 0;i < M;i++) {
-		r[i] = y[i]; //Copy the result vector y into the residual vector
-	}
-
-	printf("Algorim Begins \n");
-
-	for(iterationCounter=0; iterationCounter<1; iterationCounter++){
-		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
-		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
-		printf("Max Index: %d\n", maxIndex);
-		unionMat(indexSet, maxIndex);
-
-		float rand_Mat_Hat[M][NumberFound];
-		float rand_Mat_Transpose[NumberFound][M];
-		float transpose_By_Y[NumberFound];
-		float rand_Mat_Squared[NumberFound][NumberFound];
-
-		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
-			for ( j = 0;j < NumberFound;j++) {
-				rand_Mat_Hat[i*NumberFound][j] = Rand_Mat[i][indexSet[j]];
-			}
-		}
-
-		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
-
-		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
-
-		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
-
-		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
-
-		
-
-
-	}
-	printf("Printing correlation\n");
-	for (i = 0;i <N;i=i+1) {
-		printf("%.10f\n", correlation[i]);
-	}
-	
-	printf("Printing index set\n");
-	for (i = 0;i <N;i=i+1) {
-		printf("%d\n", indexSet[i]);
-	}
-	
-	return 0; 
-}
-*/
-
 // Function to get cofactor of A[p][q] in temp[][]. n is current 
 // dimension of A[][] 
 void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n) 
@@ -465,8 +341,24 @@ int inverse(int q, int A[q][q], float inverse[q][q])
 } 
 
 
+void testMarko(){
+	/**
+	int arr[2][3] = {{3,2,4}, {-4,5,1}};
+	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
+	int result[2][4] = {0};
+	MatMultiplication(2,3,4,arr,arr1,result);
+	printMatrix(2,4,result);
+	
+	
+	int arr[2][2] = {{4,3}, {2,1}};
+	int arr1[2][2] = {{1,2},{1,1}};
+	int res[2][2] = {0};
+	MatSubtraction(2,2,arr,arr1,res);
+	printMatrix(2,2,res);
+	*/
+}
 // Driver program 
-int main() 
+int testInverse() 
 { 
 	int A[4][4] = { {5, -2, 2, 7}, 
 					{1, 0, 0, 3}, 
@@ -485,6 +377,123 @@ int main()
 
 	return 0; 
 } 
+
+
+int main(){
+
+	//srand((unsigned int)time(NULL));
+	// populates the starting matrix with random values
+	for(int x = 0; x < M; x++){
+		for(int y = 0; y < N; y++){
+			Rand_Mat[x][y] =  (float) rand()/(float)(RAND_MAX) * MAX_RAND; //Populate with random values from 0-9
+		}
+	}
+	//printMatrix(M, N, Rand_Mat);
+	//N=256, M=64
+	float x[N];
+	float y[M];
+	float x_hat[N];
+
+	int i, j;
+	int iterationCounter;
+
+	for (i = 0;i <N;i=i+1) {
+		x[i] = 0;  //Create a normalized vector with values all <1
+	}
+	
+	int randNum;
+	//Make 6 random coeff out of N coeff in normalized vector >1 with range 2>x>24
+	for (i = 0;i < S;i++){
+		randNum = (int) (rand() % (N-1));
+		x[randNum] = (float)(rand() % 25);
+		if(x[randNum] < 2){
+			x[randNum] += 15;
+		}
+	}
+
+	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
+
+	//PRINTING Y
+	printf("Printing X\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%.10f", x[i]);
+		printf("\n");
+	}
+
+
+	//Beginning of OMP Algorithm
+	float r[M];  //Residual vector
+	float norms[N];  //Norm vector
+	float correlation[N];  //Correlation array
+	int indexSet[N];  //Index set which will contain max indexes
+
+	NumberFound=0;  //Number of max indexes found
+
+	for (i = 0;i < N;i++){
+		x_hat[i]= 0;
+		indexSet[i] = 999999; //Initialize with some value greater than any real possible value
+		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of C
+	}
+
+	for (i = 0;i < M;i++) {
+		r[i] = y[i]; //Copy the result vector y into the residual vector
+	}
+
+	printf("Algorim Begins \n");
+
+	for(iterationCounter=0; iterationCounter<1; iterationCounter++){
+		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
+		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
+		printf("Max Index: %d\n", maxIndex);
+		unionMat(indexSet, maxIndex);
+
+		float rand_Mat_Hat[M][NumberFound];
+		float rand_Mat_Transpose[NumberFound][M];
+		float transpose_By_Y[NumberFound];
+		float rand_Mat_Squared[NumberFound][NumberFound];
+
+		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
+			for ( j = 0;j < NumberFound;j++) {
+				rand_Mat_Hat[i*NumberFound][j] = Rand_Mat[i][indexSet[j]];
+			}
+		}
+
+		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
+
+		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
+
+		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
+
+		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
+
+		//int adj[NumberFound][NumberFound]; // To store adjoint of A[][] 
+
+		float inv[NumberFound][NumberFound]; // To store inverse of A[][] 
+
+		//adjoint(NumberFound, A, adj); 
+
+		if (inverse(NumberFound, rand_Mat_Squared, inv)){
+			printMatrix(NumberFound, NumberFound, inv);
+		}
+		
+
+
+	
+	}
+	/**
+	printf("Printing correlation\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%.10f\n", correlation[i]);
+	}
+	
+	printf("Printing index set\n");
+	for (i = 0;i <N;i=i+1) {
+		printf("%d\n", indexSet[i]);
+	}
+	**/
+
+	return 0; 
+}
 
 
 
