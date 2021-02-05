@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "stdio.h"
 #include <stdlib.h>
-#include "math.h"
+#include <math.h>
 
 #define M 64 // Amount of measurements
 #define N 256 // Amount of samples
@@ -69,9 +69,9 @@ Subtracts two matrices of same size into result matrix.
 Matricies must be same size to subtract.
 
 */
-void matSubtraction(int matrix1[M][N],int matrix2[M][N],int result[M][N]){
-	for(int i=0;i<M;i++){
-    		for(int j=0;j<N;j++){
+void matSubtraction(int m, int n, float matrix1[m][n], float matrix2[m][n], float result[m][n]){
+	for(int i=0;i<m;i++){
+    		for(int j=0;j<n;j++){
 			result[i][j] = matrix1[i][j] - matrix2[i][j];  // Subtract matrix2 from matrix1 and store into result matrix
 			//printf("%d\n",result[i][j]);
 		}
@@ -169,8 +169,9 @@ void unionMat(int *vec, int newval) {
 			return;
 		}
 	}
+
 	*(vec + NumberFound) = newval;  //Add max index to max index set in order according to the number of max index values which have been found
-	NumberFound++;  //Increment number of max index values which have been found
+	NumberFound=NumberFound+1;  //Increment number of max index values which have been found
 	bubbleSort(vec, NumberFound);  //Sort to verify that max indexes are in order in the max index set
 	return;
 }
@@ -341,7 +342,16 @@ int inverse(int q, float A[q][q], float inverse[q][q])
 
 	return 1; 
 } 
-
+void magnitude(int p, float matrix1[p], float result[1]){
+	float temp=0.0;
+	for(int i =0; i<p; i++){
+		//printf("Matrix index %d is %f\n", i, matrix1[i]);
+		temp+= matrix1[i]*matrix1[i];
+	}
+	//printf("Temp variable in magnitude is %f\n", temp);
+	result[0]=sqrt(temp);
+	return;
+}
 
 void testMarko(){
 	/**
@@ -399,29 +409,29 @@ int main(){
 	int i, j;
 	int iterationCounter;
 
-	for (i = 0;i <N;i=i+1) {
-		x[i] = 0;  //Create a normalized vector with values all <1
+	for (i = 0;i <M;i=i+1) {
+		y[i] = 0;  //Create a normalized vector with values all <1
 	}
 	
 	int randNum;
 	//Make 6 random coeff out of N coeff in normalized vector >1 with range 2>x>24
 	for (i = 0;i < S;i++){
-		randNum = (int) (rand() % (N-1));
-		x[randNum] = (float)(rand() % 25);
-		if(x[randNum] < 2){
-			x[randNum] += 15;
+		randNum = (int) (rand() % (M-1));
+		y[randNum] = (float)(rand() % 25);
+		if(y[randNum] < 2.0){
+			y[randNum] += 15.0;
 		}
 	}
 
-	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
-
+	//matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
+	/**
 	//PRINTING Y
-	printf("Printing X\n");
-	for (i = 0;i <N;i=i+1) {
-		printf("%.10f", x[i]);
+	printf("Printing Y\n");
+	for (i = 0;i <M;i=i+1) {
+		printf("%f", y[i]);
 		printf("\n");
 	}
-
+	*/
 
 	//Beginning of OMP Algorithm
 	float r[M];  //Residual vector
@@ -429,31 +439,42 @@ int main(){
 	float correlation[N];  //Correlation array
 	int indexSet[N];  //Index set which will contain max indexes
 
-	NumberFound=0;  //Number of max indexes found
+	//NumberFound=0;  //Number of max indexes found
 
 	for (i = 0;i < N;i++){
 		x_hat[i]= 0;
 		indexSet[i] = 999999; //Initialize with some value greater than any real possible value
-		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of C
+		norms[i] = norm_Col(Rand_Mat, M, N, i); //Calculate norm of column of i
 	}
 
 	for (i = 0;i < M;i++) {
 		r[i] = y[i]; //Copy the result vector y into the residual vector
+		//printf("%f\n", y[i]);
 	}
 
 	printf("Algorim Begins \n");
 
-	for(iterationCounter=0; iterationCounter<1; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<2; iterationCounter++){
+		printf("Iteration %d\n", iterationCounter);
+		//printMatrix(M, 1, r);
 		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
+		printMatrix(N, 1, correlation);
+
 		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
+		printf("MAX CORRELATION IS %f\n", correlation[maxIndex]);
 		printf("Max Index: %d\n", maxIndex);
 		unionMat(indexSet, maxIndex);
+
 
 		float rand_Mat_Hat[M][NumberFound];
 		float rand_Mat_Transpose[NumberFound][M];
 		float transpose_By_Y[NumberFound];
 		float rand_Mat_Squared[NumberFound][NumberFound];
-		float
+		float inv_By_TransposeY[NumberFound];
+		float randMatHat_By_Inv[M];
+		float x_bar[M];
+		float x_bar_Mag[1];
+		float residualX[M];
 
 		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
 			for ( j = 0;j < NumberFound;j++) {
@@ -467,40 +488,39 @@ int main(){
 
 		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
 
-		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
+		//printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 
 		//int adj[NumberFound][NumberFound]; // To store adjoint of A[][] 
 
 		float inv[NumberFound][NumberFound]; // To store inverse of A[][] 
 
-		//adjoint(NumberFound, A, adj); 
+		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
+		inverse(NumberFound, rand_Mat_Squared, inv);
+		//printMatrix(NumberFound, NumberFound, inv);
+		matMultiplication(NumberFound, NumberFound, 1, inv, transpose_By_Y, inv_By_TransposeY);
+		matMultiplication(M, NumberFound, 1, rand_Mat_Hat, inv_By_TransposeY, randMatHat_By_Inv);
+		matSubtraction(M, 1, y, randMatHat_By_Inv, x_bar);
+		magnitude(M, x_bar, x_bar_Mag);
+		//printf("X bar magnitude is %f\n", x_bar_Mag[0]);
+		x_hat[indexSet[NumberFound-1]] = x_bar_Mag[0];
 
-		if (inverse(NumberFound, rand_Mat_Squared, inv)){
-			printMatrix(NumberFound, NumberFound, inv);
-		}
-		
-		//matMultiplication inv * transpose_By_Y = X
-		//matMultiplication rand_Mat_Hat * X = rand_Mat_Hat_By_X
-		//matSubtraction y - rand_Mat_Hat_By_X = X_Hat
-		//magnitude(X_Hat) = X_Bar
-		//x_hat[indexSet[NumberFound-1]] = X_Bar
-
-		
-
-
-	
+		matMultiplication(M, N, 1, Rand_Mat, x_hat, residualX);
+		//printMatrix(M, 1, residualX);
+		matSubtraction(M, 1, y, residualX, r);
+		//printMatrix(M, 1, r);
 	}
 	/**
-	printf("Printing correlation\n");
+	printf("Printing Approximation\n");
 	for (i = 0;i <N;i=i+1) {
-		printf("%.10f\n", correlation[i]);
+		printf("%.10f\n", x_hat[i]);
 	}
-	
+	**/
+	/**
 	printf("Printing index set\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("%d\n", indexSet[i]);
 	}
-	**/
+	*/
 
 	return 0; 
 }
