@@ -98,8 +98,8 @@ for (int i = 0; i < M; i++)  // WHEN I USE this part all programs inlcuding this
 			y[randNum] += 15;
 		}
 	}
-	//printf("PRINTING Y\n");
-	//print((float *) y, 1, M);
+	printf("PRINTING Y\n");
+	print((float *) y, 1, M);
 
 
 	//for (int i = 0;i < S;i++) // only 4 out of N coeff of x are nonzero
@@ -128,7 +128,7 @@ for (int i = 0; i < M; i++)  // WHEN I USE this part all programs inlcuding this
 		for ( i = 0;i < M;i++) { // in matlab code x meant to be y
 			r[i] = *(y + i); //r = x;
 		}
-		printf("PRINTING  R\n");
+		//printf("PRINTING  R\n");
 		//print((float *) r, 1, M);
 
 
@@ -145,8 +145,8 @@ for (int i = 0; i < M; i++)  // WHEN I USE this part all programs inlcuding this
 				correlation[i+2] = fabs(((float)innerMulColumn_N((float *)A, (float *)r, M, N, i+2)) / ((float)norm_of_colum[i+2]));
 				correlation[i+3] = fabs(((float)innerMulColumn_N((float *)A, (float *)r, M, N, i+3)) / ((float)norm_of_colum[i+3]));
 			}
-			printf("Correlation is\n");
-			print(correlation, 1, N);
+			//printf("Correlation is\n");
+			//print(correlation, 1, N);
 			int max_value_index = max_index((float *)correlation, N);// find(f == max(f));
 			printf("Max value index is %d\n", max_value_index);
 			Union((int *)finded_index, max_value_index);
@@ -182,7 +182,7 @@ for (int i = 0; i < M; i++)  // WHEN I USE this part all programs inlcuding this
 				matMul_M((float *)At, y, (float *)y_p, number_of_finded, M, 1); //At*y
 				matMul_M((float *)At, (float *)Acopy, (float *)A_square, number_of_finded, M, number_of_finded);
 
-				//HERE
+
 				QR((float *)A_square, (float *)Q, (float *)R, number_of_finded);
 
 				transpose((float *)Q, (float *)Qt, number_of_finded, number_of_finded);
@@ -208,14 +208,22 @@ for (int i = 0; i < M; i++)  // WHEN I USE this part all programs inlcuding this
 
 			matSUB(y, A_x_h, r, M, 1); //r = y - A*s_hat;
 
+
 			}
 		}/*END OF OMP SECTION*/
 	}
 	stop();
 	//print((float *)A, 1, N);
-	printf("PRINTING  X HAT\n");
-	print((float *)x_hat, 1, N);
+	//printf("PRINTING  X HAT\n");
+	//print((float *)x_hat, 1, N);
 	printf("Finished");
+
+	float testY[M];
+	
+	matMul_N((float *)A, x_hat, testY, M, N, 1);
+	printf("PRINTING TEST Y\n");
+	print((float *) testY, M, 1);
+
 
 	SNR(x,x_hat,N);
 		return (0);
