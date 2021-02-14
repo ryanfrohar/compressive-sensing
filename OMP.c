@@ -22,9 +22,10 @@ mulColumn: Index of the column being multiplied in the matrix by the vector. (in
 float innerColMul(float vector[M], int mulColumn)
 {
 	float total = 0;  // Used to store the total product value of the multiplication
-	
+	float *index = Rand_Mat + mulColumn;
 	// Loop to multiply all elements of the matrix's selected column by the vector's elements
 	for(int i=0; i<M ; i++) {
+		//total = total + *(index + i*N) * *(vector + i);
 		total = total + (Rand_Mat[i][mulColumn] * vector[i]);  // Increment total sum value
 	}
 	
@@ -108,7 +109,7 @@ int max_index(float *array, int size){
 			indexMax = i;  //Update the index value where the max value exist
 		}
 	}
-	return(indexMax);  //Return index value of the max
+	return indexMax;  //Return index value of the max
 }	
 
 /**
@@ -390,6 +391,56 @@ int testInverse()
 	return 0; 
 } 
 
+float innerColMulExtended(float *mat, int n, int C1, int C2){
+	// n is size, C1 and C2 are columns that are correlated
+	float sum = 0;
+	int i;
+	for ( i = 0;i < n;i++)
+		sum += *(mat + i*n + C1) * *(mat + i*n + C2);
+	return sum;
+}
+
+void QR(float *A, float *Q, float *R, int n) {
+
+	int i,j,K;
+	for ( i = 0;i < n;i++) //Q = A;
+		for ( j = 0;j < n;j++) {
+			*(Q + i*n + j) = *(A + i*n + j);
+			*(R + i*n + j) = 1e-20;
+		}
+
+	for ( K = 0;K < n;K++) {
+		for ( i = 0;i < K;i++)
+			*(R + i*n + K) = innerColMulExtended(Q, n, i, K); //	R(1:k-1,k) = Q(:,1:k-1)'*Q(:,k);
+
+		for ( i = 0;i < n;i++) {
+			float QinR = 0;
+			for ( j = 0;j < K;j++)
+				QinR = QinR + *(Q + i*n + j) * *(R + j*n + K);
+			*(Q + i*n + K) = *(Q + i*n + K) - QinR;
+		}
+		*(R + K*n + K) = norm_Col(Q, n, n, K);
+		for ( i = 0;i < n;i++) {
+
+			*(Q + i*n + K) = *(Q + i*n + K) / *(R + K*n + K);
+		}
+	}
+
+	return;
+}
+
+void backSubstitution(float *R, float *y_Qt, float *x_hat, int n) {
+	int i,j,d;
+	for ( d = 0;d < n;d++)
+		*(x_hat + d) = 0;
+	for ( i = n - 1;i >= 0;i--)
+	{
+		*(x_hat + i) = *(y_Qt + i) / *(R + i*n + i);
+		for ( j = 0;j < i;j++)
+			*(y_Qt + j) = *(y_Qt + j) - *(R + j*n + i) * *(x_hat + i);
+	}
+	return;
+}
 
 int main(){
 
@@ -454,73 +505,107 @@ int main(){
 
 	printf("Algorim Begins \n");
 
-	for(iterationCounter=0; iterationCounter<2; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
 		printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		calc_correlation(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
 		printMatrix(N, 1, correlation);
 
 		int maxIndex= max_index(correlation, N);  //Max index is the index of the max value in the correlation array
-		printf("MAX CORRELATION IS %f\n", correlation[maxIndex]);
-		printf("Max Index: %d\n", maxIndex);
+		//printf("MAX CORRELATION IS %f\n", correlation[maxIndex]);
+		//printf("Max Index: %d\n", maxIndex);
 		unionMat(indexSet, maxIndex);
 
+		{
+			float rand_Mat_Hat[M][NumberFound];
+			float rand_Mat_Transpose[NumberFound][M];
+			float rand_Mat_Squared[NumberFound][NumberFound];
+			float q[NumberFound][NumberFound];
+			float resultQR[NumberFound][NumberFound];
+			float qt[NumberFound][NumberFound];
+			float yQt[NumberFound][NumberFound];
+			float transpose_By_Y[NumberFound];
+			float x_hat_temp[M];
 
-		float rand_Mat_Hat[M][NumberFound];
-		float rand_Mat_Transpose[NumberFound][M];
-		float transpose_By_Y[NumberFound];
-		float rand_Mat_Squared[NumberFound][NumberFound];
-		float inv_By_TransposeY[NumberFound];
-		float randMatHat_By_Inv[M];
-		float x_bar[M];
-		float x_bar_Mag[1];
-		float residualX[M];
+			/**
+			
 
-		for ( i = 0;i < M;i++){ // Get a copy of A with only selected index
-			for ( j = 0;j < NumberFound;j++) {
-				rand_Mat_Hat[i*NumberFound][j] = Rand_Mat[i][indexSet[j]];
+			float inv_By_TransposeY[NumberFound];
+			float randMatHat_By_Inv[M];
+			float x_bar[M];
+			float x_bar_Mag[1];
+			float residualX[M];
+			**/
+
+			for ( i = 0;i < M;i++){ // Get a copy of Rand Matrix with only selected index
+				for ( j = 0;j < NumberFound;j++) {
+					rand_Mat_Hat[i*NumberFound][j] = Rand_Mat[i][indexSet[j]];
+				}
 			}
+
+			transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
+
+			matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
+
+			matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
+
+			//printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
+
+			//int adj[NumberFound][NumberFound]; // To store adjoint of A[][] 
+			/**
+			//HERE
+			float inv[NumberFound][NumberFound]; // To store inverse of A[][] 
+
+			printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
+			inverse(NumberFound, rand_Mat_Squared, inv);
+			//printMatrix(NumberFound, NumberFound, inv);
+			matMultiplication(NumberFound, NumberFound, 1, inv, transpose_By_Y, inv_By_TransposeY);
+			matMultiplication(M, NumberFound, 1, rand_Mat_Hat, inv_By_TransposeY, randMatHat_By_Inv);
+			matSubtraction(M, 1, y, randMatHat_By_Inv, x_bar);
+			magnitude(M, x_bar, x_bar_Mag);
+			//printf("X bar magnitude is %f\n", x_bar_Mag[0]);
+			x_hat[indexSet[NumberFound-1]] = x_bar_Mag[0];
+
+			matMultiplication(M, N, 1, Rand_Mat, x_hat, residualX);
+			//printMatrix(M, 1, residualX);
+			matSubtraction(M, 1, y, residualX, r);
+			//printMatrix(M, 1, r);
+			**/
+
+			QR(rand_Mat_Squared, q, resultQR, NumberFound);
+
+			transpose(NumberFound, NumberFound, q, qt);
+					
+			matMultiplication(NumberFound, NumberFound, 1, qt, transpose_By_Y, yQt);
+
+			backSubstitution(resultQR, yQt, x_hat_temp, NumberFound);
+		
+
+			for ( i = 0;i < NumberFound;i++){
+				x_hat[indexSet[i]] = x_hat_temp[i]; //put the right value in the right positions
+			}
+
+			//printf("PRINTING FINDED INDEX iteration %d\n", ii);
+			//print_int(finded_index, 1, N);
+
+			float A_x_h[M];
+			matMultiplication(M, N, 1, Rand_Mat, x_hat, A_x_h);
+
+			matSubtraction(M, 1, y, A_x_h, r); //r = y - A*s_hat;
 		}
-
-		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
-
-		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
-
-		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
-
-		//printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
-
-		//int adj[NumberFound][NumberFound]; // To store adjoint of A[][] 
-
-		float inv[NumberFound][NumberFound]; // To store inverse of A[][] 
-
-		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
-		inverse(NumberFound, rand_Mat_Squared, inv);
-		//printMatrix(NumberFound, NumberFound, inv);
-		matMultiplication(NumberFound, NumberFound, 1, inv, transpose_By_Y, inv_By_TransposeY);
-		matMultiplication(M, NumberFound, 1, rand_Mat_Hat, inv_By_TransposeY, randMatHat_By_Inv);
-		matSubtraction(M, 1, y, randMatHat_By_Inv, x_bar);
-		magnitude(M, x_bar, x_bar_Mag);
-		//printf("X bar magnitude is %f\n", x_bar_Mag[0]);
-		x_hat[indexSet[NumberFound-1]] = x_bar_Mag[0];
-
-		matMultiplication(M, N, 1, Rand_Mat, x_hat, residualX);
-		//printMatrix(M, 1, residualX);
-		matSubtraction(M, 1, y, residualX, r);
-		//printMatrix(M, 1, r);
 	}
-	/**
+	
 	printf("Printing Approximation\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("%.10f\n", x_hat[i]);
 	}
-	**/
-	/**
+	
+	
 	printf("Printing index set\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("%d\n", indexSet[i]);
 	}
-	*/
+	
 
 	return 0; 
 }
