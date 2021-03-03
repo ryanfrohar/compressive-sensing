@@ -180,13 +180,13 @@ Function to add max indexes to the max index set
 void unionMat(int *vec, int newval) {
 	// Using this function values of index are sorted and there is no need to check for repitition
 	for (int i = 0;i<NumberFound;i++){
-		if (*(vec + i) == newval){ 
+		if (vec[i] == newval){ 
 			//Ignore if repetition
 			return;
 		}
 	}
 
-	*(vec + NumberFound) = newval;  //Add max index to max index set in order according to the number of max index values which have been found
+	vec[NumberFound] = newval;  //Add max index to max index set in order according to the number of max index values which have been found
 	NumberFound=NumberFound+1;  //Increment number of max index values which have been found
 	bubbleSort(vec, NumberFound);  //Sort to verify that max indexes are in order in the max index set
 	return;
@@ -404,20 +404,7 @@ int testInverse() {
 
 	return 0; 
 } 
-/**
 
-Returns sum of products of two columns in a matrix
-
-*/
-
-float innerProductExtend(float *mat, int n, int C1, int C2){
-	// n is size, C1 and C2 are columns that are correlated
-	float sum = 0;
-	int i;
-	for ( i = 0;i < n;i++)
-		sum += *(mat + i*n + C1) * *(mat + i*n + C2);
-	return sum;
-}
 /**
 
 The QR algotrithm decomposes a randMatSquared matrix (A) into two matrices Q and R by using the Gram-Schmidt process.
@@ -425,56 +412,52 @@ It is decomposed into an orthogonal and a triangular matrix.
 
 */
 
-void QR(float *A, float *Q, float *R, int n) {
 
-	int i,j,K;
+void qr(int n, float q[n][n], float R[n][n]) {
 
-	//Initialize Q to be equal to input vector randMatSquared
-	for ( i = 0;i < n;i++){
-		for ( j = 0;j < n;j++) {
-			*(Q + i*n + j) = *(A + i*n + j);
-			*(R + i*n + j) = 1e-20;
-		}
-	}
+	//Initialize R to be equal to (transpose of Q) x Q 
 
-	//Initialize R to be equal to transpose of Q x Q by using the innerProductExtendFunction
-	for ( K = 0;K < n;K++) {
-		for ( i = 0;i < K;i++){
-			*(R + i*n + K) = innerProductExtend(Q, n, i, K); 
+	for (int m = 0;m < n;m++) {
+		for (int i = 0;i < m;i++){
+			float product=0;
+			for(int z = 0; z<n;z++){
+				product+= q[z][i] * q[z][m];
+			}
+			R[i][m] = product;
 		}
 
-		for ( i = 0;i < n;i++) {
-			float QinR = 0;
+		for (int i = 0;i < n;i++) {
+			float result = 0;
+
 			//Store R x Q of column into QinR
-			for ( j = 0;j < K;j++){
-				QinR = QinR + *(Q + i*n + j) * *(R + j*n + K);
+			for (int j = 0;j < m;j++){
+				result = result + q[i][j] * R[j][m];
 			}
 
 			//Subtract QinR by Q
-			*(Q + i*n + K) = *(Q + i*n + K) - QinR;
+			q[i][m] = q[i][m] - result;
 		}
 
 		//Store norm of Q in R
-		*(R + K*n + K) = normCol(Q, n, n, K);
+		R[m][m] = normCol(q, n, n, m);
 
 		//Divide Q by norm of Q which is stored in R
-		for ( i = 0;i < n;i++) {
-			*(Q + i*n + K) = *(Q + i*n + K) / *(R + K*n + K);
+		for (int i = 0;i < n;i++) {
+			q[i][m] = q[i][m] / R[m][m];
 		}
 	}
 
 	return;
 }
 
-void backSubstitution(float *R, float *y_Qt, float *x_hat, int n) {
-	int i,j,d;
-	for ( d = 0;d < n;d++)
-		*(x_hat + d) = 0;
-	for ( i = n - 1;i >= 0;i--)
-	{
-		*(x_hat + i) = *(y_Qt + i) / *(R + i*n + i);
-		for ( j = 0;j < i;j++)
-			*(y_Qt + j) = *(y_Qt + j) - *(R + j*n + i) * *(x_hat + i);
+void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
+
+	for (int i = n - 1;i >= 0;i--){
+		x_hat[i] = d[i] / R[i][i];
+		
+		for (int j = 0;j < i;j++){
+			d[j] = d[j] - R[j][i] * x_hat[i];
+		}
 	}
 	return;
 }
@@ -559,7 +542,7 @@ int main(){
 		float q[NumberFound][NumberFound];
 		float resultQR[NumberFound][NumberFound];
 		float qt[NumberFound][NumberFound];
-		float yQt[NumberFound][NumberFound];
+		float yQt[NumberFound];
 		float transpose_By_Y[NumberFound];
 		float x_hat_temp[M];
 		
@@ -573,8 +556,8 @@ int main(){
 		float residualX[M];
 		**/
 		//printf("Number found is %d\n", NumberFound);
-		for ( i = 0;i < M;i++){ // Get a copy of Rand Matrix with only selected index
-			for ( j = 0;j < NumberFound;j++) {
+		for (i = 0;i < M;i++){ // Get a copy of Rand Matrix with only selected index
+			for (j = 0;j < NumberFound;j++) {
 				//printf("%d\n", i*NumberFound+ j);
 				rand_Mat_Hat[i*NumberFound+ j] = Rand_Mat[i][indexSet[j]];
 			}
@@ -610,14 +593,28 @@ int main(){
 		//printMatrix(M, 1, r);
 		**/
 
+
+		//Initialize Q to be equal to input vector randMatSquared
+		for (i = 0;i < NumberFound;i++){
+			for (j = 0;j < NumberFound;j++) {
+				//Initialize Q to be equal to A
+				q[i][j] = rand_Mat_Squared[i][j];
+				resultQR[i][j] = 0;
+			}
+		}
 		
-		QR(rand_Mat_Squared, q, resultQR, NumberFound);
+		qr(NumberFound, q, resultQR);
+
 
 		transpose(NumberFound, NumberFound, q, qt);
 				
 		matMultiplication(NumberFound, NumberFound, 1, qt, transpose_By_Y, yQt);
 
-		backSubstitution(resultQR, yQt, x_hat_temp, NumberFound);
+		for(i=0;i<M;i++){
+			x_hat_temp[i]=0;
+		}
+
+		backSubstitution(NumberFound, resultQR, yQt, x_hat_temp);
 	
 
 		for ( i = 0;i < NumberFound;i++){
