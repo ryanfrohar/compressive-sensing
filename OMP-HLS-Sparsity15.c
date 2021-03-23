@@ -504,7 +504,7 @@ float SNR(float *a, float *b, int Length){
 }
 
 int snrTest(float snrValue){
-	if(snrValue>20.0){
+	if(snrValue>100){
 		printf("Signal reconstruction SNR is greater than 20 dB and has PASSED the test\n");
 		return 1;
 	}else{
