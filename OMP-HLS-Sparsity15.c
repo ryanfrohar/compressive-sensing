@@ -690,9 +690,10 @@ int main(){
 	}
 	
 	snrValue=SNR(x, x_hat, N);
-	int testresult = snrTest(snrValue);
-	
-
+	int testResult = snrTest(snrValue);
+	if(testResult==0){
+		return 1;
+	}
 	return 0; 
 }
 
