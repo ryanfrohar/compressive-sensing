@@ -474,6 +474,34 @@ void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
 	return;
 }
 
+float MSE(float *a, float *b, int Length){
+	int l;
+	float temp;
+	float mse = 0;
+	for (l = 0; l<Length; l++)
+	{
+		temp = a[l] - b[l];
+		mse += temp*temp;
+	}
+	return mse;
+}
+
+float SNR(float *a, float *b, int Length){
+	int l;
+	int i;
+	int temp;
+	float mse = MSE(a, b, Length);
+	float signal_power = 0;
+	for ( i = 0; i<Length; i++)
+		signal_power += a[i] * a[i];
+
+	printf("mse : %d \n",(int) mse);
+	printf("signal_power : %d \n",(int) signal_power);
+	float snr = 10 * log10(signal_power / mse);
+	printf("SNR : %d \n",(int) snr);
+	return snr;
+}
+
 int main(){
 
 	//srand((unsigned int)time(NULL));
@@ -650,7 +678,7 @@ int main(){
 		printf("%.10f\n", x_hat[i]);
 	}
 	
-
+	SNR(x, x_hat, N);
 	return 0; 
 }
 
