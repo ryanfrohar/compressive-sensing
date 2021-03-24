@@ -586,7 +586,7 @@ int main(){
 
 	printf("Algorim Begins \n");
 	//for(ii=0;ii<100;ii++)
-	for(iterationCounter=0; iterationCounter<7; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<15; iterationCounter++){
 		printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
