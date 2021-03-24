@@ -584,7 +584,7 @@ int main(){
 	}
 
 	printf("Algorim Begins \n");
-	for(ii=0;ii<100;ii++)
+	//for(ii=0;ii<100;ii++)
 	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
 		printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
