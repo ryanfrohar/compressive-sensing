@@ -521,6 +521,16 @@ int main(){
 	int iterationCounter;
 	int ii;
 
+	FILE *myFile;
+    myFile = fopen("inputSignal.txt", "r");
+
+
+    for (i = 0; i < 256; i++){
+        fscanf(myFile, "%f", &x[i]);
+    }
+
+    fclose(myFile);
+	/**
 	for (i = 0;i <N;i=i+1) {
 		x[i] = 0;  //Create a normalized vector with values all <1
 	}
@@ -531,6 +541,7 @@ int main(){
 	x[252]= 12.0;
 	x[100]=13.0;
 	x[150]= 14.0;
+	**/
 
 	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 	
@@ -562,8 +573,8 @@ int main(){
 	}
 
 	printf("Algorim Begins \n");
-	//for(ii=0;ii<100;ii++)
-	for(iterationCounter=0; iterationCounter<7; iterationCounter++){
+	for(ii=0;ii<100;ii++)
+	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
 		printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
