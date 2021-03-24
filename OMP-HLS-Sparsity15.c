@@ -556,13 +556,14 @@ int main(){
 
 	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 	
+	/**
 	//PRINTING X
 	printf("Printing X\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("Index %d: %f", i, x[i]);
 		printf("\n");
 	}
-	
+	**/
 
 	//Beginning of OMP Algorithm
 	float r[M];  //Residual vector
@@ -694,10 +695,9 @@ int main(){
 		
 	}
 	
-	printf("Printing Approximation\n");
+	printf("Printing X AND Approximation\n");
 	for (i = 0;i <N;i=i+1) {
-		printf("Index %d: ", i);
-		printf("%.10f\n", x_hat[i]);
+		printf("Index %d: (Original) %.10f (Approximated) %.10f\n", i, x[i], x_hat[i]);
 	}
 	
 	snrValue=SNR(x, x_hat, N);
