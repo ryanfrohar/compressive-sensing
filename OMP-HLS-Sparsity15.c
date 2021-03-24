@@ -11,6 +11,7 @@
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
 int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
+float snrValue=0;
 
 /**
 Function to return inner product of a specific column of a matrix and a row vector.
@@ -502,6 +503,16 @@ float SNR(float *a, float *b, int Length){
 	return snr;
 }
 
+int snrTest(float snrValue){
+	if(snrValue>20){
+		printf("Signal reconstruction SNR is greater than 20 dB and has PASSED the test\n");
+		return 1;
+	}else{
+		printf("Signal reconstruction SNR is lower than 20 dB and has FAILED the test\n");
+		return 0;
+	}
+	return 0;
+}
 int main(){
 
 	//srand((unsigned int)time(NULL));
@@ -689,9 +700,15 @@ int main(){
 		printf("%.10f\n", x_hat[i]);
 	}
 	
-	SNR(x, x_hat, N);
+	snrValue=SNR(x, x_hat, N);
+	int testResult = snrTest(snrValue);
+	if(testResult==0){
+		return 1;
+	}
 	return 0; 
 }
+
+	
 
 
 
