@@ -13,6 +13,26 @@ int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
 float snrValue=0;
 
+static float rnd_seed;
+
+void set_rnd_seed (float new_seed)
+{
+    rnd_seed = new_seed;
+}
+
+float rand_int (void)
+{
+    float k1;
+    float ix = rnd_seed;
+	
+    k1 = ix / 127773;
+    ix = 16807 * (ix - k1 * 127773) - k1 * 2836;
+    if (ix < 0)
+        ix += 2147483647;
+    rnd_seed = ix;
+    return rnd_seed;
+}
+
 /**
 Function to return inner product of a specific column of a matrix and a row vector.
 
@@ -374,58 +394,6 @@ The QR algotrithm decomposes a randMatSquared matrix (A) into two matrices Q and
 It is decomposed into an orthogonal and a triangular matrix.
 
 */
-float innerMatColumnMAT(float *mat, int n, int C1, int C2)
-{// n is size, C1 and C2 are columns that are correlated
-	float sum = 0;
-	int i;
-	for ( i = 0;i < n;i++)
-		sum += *(mat + i*n + C1) * *(mat + i*n + C2);
-	return(sum);
-}
-
-int QR(int n, float *Q, float *R) {
-
-	/*Q=A;
-	Q(:,1) = Q(:,1);
-	R(1,1) = norm(Q(:,1));
-	Q(:,1) = Q(:,1)/R(1,1);
-	for k = 2:n,
-	R(1:k-1,k) = Q(:,1:k-1)'*Q(:,k);
-	Q(:,k) = Q(:,k)- Q(:,1:k-1)*R(1:k-1,k);
-	R(k,k) = norm(Q(:,k));
-	Q(:,k) = Q(:,k)/R(k,k);
-	end
-	end
-	*/
-	int i,j,K;
-	
-	/*	R(1:k-1, k) = Q(1..n, 1 : k-1)'*Q(1..n,k);
-	Q(1..n, k) = Q(1..n, k) - Q(1..n, 1 : k-1)*R(1:k-1,k);
-	R(k, k) = norm(Q(1..n, k));
-	Q(1..n, k) = Q(1..n, k) / R(k, k);
-	*/
-	for ( K = 0;K < n;K++) {
-		for ( i = 0;i < K;i++)
-			*(R + i*n + K) = innerMatColumnMAT(Q, n, i, K); //	R(1:k-1,k) = Q(:,1:k-1)'*Q(:,k);
-
-		for ( i = 0;i < n;i++) {
-			float QinR = 0;
-			for ( j = 0;j < K;j++)
-				QinR = QinR + *(Q + i*n + j) * *(R + j*n + K);
-			*(Q + i*n + K) = *(Q + i*n + K) - QinR;
-		}
-		*(R + K*n + K) = normCol(Q, n, n, K);
-		for ( i = 0;i < n;i++) {
-
-			*(Q + i*n + K) = *(Q + i*n + K) / *(R + K*n + K);
-		}
-	}
-
-
-
-	return(1);
-}
-
 void qr(int n, float q[n][n], float R[n][n]) {
 
 	//Initialize R to be equal to (transpose of Q) x Q 
@@ -514,7 +482,6 @@ int snrTest(float snrValue){
 	return 0;
 }
 int main(){
-
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 	for(int x = 0; x < M; x++){
@@ -629,6 +596,8 @@ int main(){
 	
 		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
 
+		//printMatrix(NumberFound, M, rand_Mat_Transpose);
+
 		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
 
 		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
@@ -661,12 +630,12 @@ int main(){
 		for (i = 0;i < NumberFound;i++){
 			for (j = 0;j < NumberFound;j++) {
 				//Initialize Q to be equal to A
-			*(q + i*NumberFound + j) = *(rand_Mat_Squared + i*NumberFound + j);
-			*(resultQR + i*NumberFound + j) = 0;
+				q[i*NumberFound + j] = *(rand_Mat_Squared + i*NumberFound + j);
+				resultQR[i*NumberFound + j] = 0;
 			}
 		}
 		
-		QR(NumberFound, q, resultQR);
+		qr(NumberFound, q, resultQR);
 
 
 		transpose(NumberFound, NumberFound, q, qt);
