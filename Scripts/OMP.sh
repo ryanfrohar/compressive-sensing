@@ -4,5 +4,5 @@ cd ../Testing/
 gcc randomGenerator.c -o rand -lm
 ./rand
 cd ../C/
-gcc OMP-HLS-Sparsity15.c -o OMPTest -lm
-./OMPTest
+gcc OMP.c -o OMP -lm
+./OMP
