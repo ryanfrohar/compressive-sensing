@@ -13,26 +13,6 @@ int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
 float snrValue=0;
 
-static float rnd_seed;
-
-void set_rnd_seed (float new_seed)
-{
-    rnd_seed = new_seed;
-}
-
-float rand_int (void)
-{
-    float k1;
-    float ix = rnd_seed;
-	
-    k1 = ix / 127773;
-    ix = 16807 * (ix - k1 * 127773) - k1 * 2836;
-    if (ix < 0)
-        ix += 2147483647;
-    rnd_seed = ix;
-    return rnd_seed;
-}
-
 /**
 Function to return inner product of a specific column of a matrix and a row vector.
 
@@ -62,7 +42,7 @@ void correlationCalc(float correlation[N], float norms[N], float r[M]){
 	float temp;  // Vector to hold inner column multiplication sum value of residual vector and a given index of random matrix
 	for(int i = 0; i<N; i++){
 		temp = innerProduct((float *) r, i);
-		correlation[i] = fabs(temp/norms[i]);  // Calculate and store correlation value in the correlation array
+		correlation[i] = fabs(temp);  // Calculate and store correlation value in the correlation array
 	}
 }
 
@@ -484,11 +464,16 @@ int snrTest(float snrValue){
 int main(){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
-	for(int x = 0; x < M; x++){
-		for(int y = 0; y < N; y++){
-			Rand_Mat[x][y] =  (float) rand()/(float)(RAND_MAX) * MAX_RAND; //Populate with random values from 0-9
+	FILE *phi;
+    phi = fopen("phi.txt", "r");
+
+	for(int row = 0; row < M; row++){
+		for(int col = 0; col < N; col++){
+			 fscanf(phi, "%f", &Rand_Mat[row][col]); //Populate with random values from 0-9
 		}
 	}
+
+	fclose(phi);
 	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
 	float x[N];
