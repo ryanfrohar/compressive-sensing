@@ -472,6 +472,8 @@ int main(){
 			 fscanf(phi, "%f", &Rand_Mat[row][col]); //Populate with random values from 0-9
 		}
 	}
+
+	fclose(phi);
 	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
 	float x[N];
