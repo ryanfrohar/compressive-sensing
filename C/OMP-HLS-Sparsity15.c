@@ -500,7 +500,7 @@ int main(){
 	int ii;
 
 	FILE *myFile;
-    myFile = fopen("inputSignal.txt", "r");
+    myFile = fopen("../Testing/inputSignal.txt", "r");
 
 
     for (i = 0; i < 256; i++){
