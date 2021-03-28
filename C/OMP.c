@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include <math.h>
+#include "OMP.h"
 
 #define M 64 // Amount of measurements
 #define N 256 // Amount of samples
@@ -13,6 +14,7 @@ float x[N];
 int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
 float snrValue=0;
+
 
 /**
 Function to return inner product of a specific column of a matrix and a row vector.
@@ -527,7 +529,7 @@ int OMP(float randy[M][N], float sig[N]){
 
 	printf("Algorim Begins \n");
 	//for(ii=0;ii<100;ii++)
-	for(iterationCounter=0; iterationCounter<15; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<7; iterationCounter++){
 		printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
