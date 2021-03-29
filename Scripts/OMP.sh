@@ -5,5 +5,5 @@ gcc randomGenerator.c -o rand -lm
 ./rand
 cd ../C/
 gcc phiGenerator.c -o phi -lm
-gcc -o testbench testbench.c OMP.c
+gcc -o testbench testbench.c OMP.c -lm
 ./testbench
