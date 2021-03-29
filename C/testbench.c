@@ -93,26 +93,26 @@ ALL TIMES.
 
 #include <stdio.h>
 #include "stdio.h"
-
+#include "OMP.h"
 
 
 int main(){
 
-	float Rand [64][256];
-	float xsig [256];
+	float Rand [M][N];
+	float xsig [N];
 
 	FILE *phi;
 	phi = fopen("phi.txt", "r");
-	for(int row = 0; row < 64; row++){
-		for(int col = 0; col < 256; col++){
+	for(int row = 0; row < M; row++){
+		for(int col = 0; col < N; col++){
 				fscanf(phi, "%f", &Rand[row][col]); //Populate with random values from 0-9
 		}
 	}
 
 	fclose(phi);
 	FILE *myFile;
-	myFile = fopen("inputSignal.txt", "r");
-	for (int i = 0; i < 256; i++){
+	myFile = fopen("../Testing/inputSignal.txt", "r");
+	for (int i = 0; i < N; i++){
 		fscanf(myFile, "%f", &xsig[i]);
 	}
 	fclose(myFile);

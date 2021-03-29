@@ -2,10 +2,8 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include <math.h>
+#include "OMP.h"
 
-#define M 64 // Amount of measurements
-#define N 256 // Amount of samples
-#define S 15 // Sparsity
 
 //ENV Variables
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
@@ -473,7 +471,7 @@ int OMP(float randy[M][N], float sig[N]){
 				Rand_Mat[ro][co] = randy[ro][co];  //Create a normalized vector with values all <1
 		}
 	}
-	printMatrix(M, N, Rand_Mat);
+	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
 	float y[M];
 	float x_hat[N];
