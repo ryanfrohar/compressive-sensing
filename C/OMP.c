@@ -389,12 +389,11 @@ void qr(int n, float q[n][n], float R[n][n]) {
 		for (int inc = 0;inc < n;inc++) {
 			float result = 0;
 
-			//Store R x Q of column into QinR
+			//Store R x Q of column into result
 			for (int j = 0;j < m;j++){
 				result = result + q[inc][j] * R[j][m];
 			}
 
-			//Subtract QinR by Q
 			q[inc][m] = q[inc][m] - result;
 		}
 
@@ -422,40 +421,38 @@ void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
 	return;
 }
 
-float MSE(float *a, float *b, int Length){
-	int l;
-	float temp;
+float meanSquareError(int n, float a[n], float b[n]){
+	float error;
 	float mse = 0;
-	for (l = 0; l<Length; l++)
-	{
-		temp = a[l] - b[l];
-		mse += temp*temp;
+	for (int i = 0; i<n; i++){
+		error = a[i] - b[i];
+		mse += error*error;
 	}
 	return mse;
 }
 
-float SNR(float *a, float *b, int Length){
+float signalToNoise(int n, float a[n], float b[n]){
 	int l;
-	int i;
-	int temp;
-	float mse = MSE(a, b, Length);
-	float signal_power = 0;
-	for ( i = 0; i<Length; i++)
-		signal_power += a[i] * a[i];
+	float snr;
+	float mse = meanSquareError(n, a, b);
+	float sigPower = 0;
+	for (int i = 0; i<n; i++){
+		sigPower += a[i] * a[i];
+	}
 
-	printf("mse : %d \n",(int) mse);
-	printf("signal_power : %d \n",(int) signal_power);
-	float snr = 10 * log10(signal_power / mse);
-	printf("SNR : %d \n",(int) snr);
+	printf("The mean square error of the approximation is: %d \n",(int) mse);
+	printf("The original signal power is: %d \n",(int) sigPower);
+	snr = 10 * log10(sigPower/mse);
+	printf("The signal to noise ratio is: %d \n",(int) snr);
 	return snr;
 }
 
 int snrTest(float snrValue){
 	if(snrValue>20){
-		printf("Signal reconstruction SNR is greater than 20 dB and has PASSED the test\n");
+		printf("Signal reconstruction SNR of %d is greater than 20 dB and has PASSED the test\n", (int) snrValue);
 		return 1;
 	}else{
-		printf("Signal reconstruction SNR is lower than 20 dB and has FAILED the test\n");
+		printf("Signal reconstruction SNR of %d is lower than 20 dB and has FAILED the test\n", (int) snrValue);
 		return 0;
 	}
 	return 0;
@@ -523,10 +520,10 @@ int OMP(float randy[M][N], float sig[N]){
 		//printf("%f\n", y[i]);
 	}
 
-	printf("Algorim Begins \n");
-	//for(ii=0;ii<100;ii++)
-	for(iterationCounter=0; iterationCounter<15; iterationCounter++){
-		printf("Iteration %d\n", iterationCounter);
+	printf("Algorithm has began approximation of X\n");
+
+	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
+		//printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
 		//printMatrix(N, 1, correlation);
@@ -636,12 +633,14 @@ int OMP(float randy[M][N], float sig[N]){
 		
 	}
 
+	printf("Algorithm has finished and X has been approximated.\n");
 	printf("Printing X AND Approximation\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("Index %d: (Original) %.10f (Approximated) %.10f\n", i, x[i], x_hat[i]);
 	}
 	
-	snrValue=SNR(x, x_hat, N);
+	snrValue=signalToNoise(N, x, x_hat);
+
 	/**#ifndef __SYNTHESIS__
 		FILE *fp1; // The following code is ignored for synthesis
 		fp1 = fopen("out.txt", "w");
