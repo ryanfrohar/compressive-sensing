@@ -2,13 +2,12 @@
 #include "stdio.h"
 #include <stdlib.h>
 #include <math.h>
+#include "OMP.h"
 
-#define M 64 // Amount of measurements
-#define N 256 // Amount of samples
-#define S 15 // Sparsity
 
 //ENV Variables
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
+float x[N];
 int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
 float snrValue=0;
@@ -387,24 +386,24 @@ void qr(int n, float q[n][n], float R[n][n]) {
 			R[i][m] = product;
 		}
 
-		for (int i = 0;i < n;i++) {
+		for (int inc = 0;inc < n;inc++) {
 			float result = 0;
 
 			//Store R x Q of column into QinR
 			for (int j = 0;j < m;j++){
-				result = result + q[i][j] * R[j][m];
+				result = result + q[inc][j] * R[j][m];
 			}
 
 			//Subtract QinR by Q
-			q[i][m] = q[i][m] - result;
+			q[inc][m] = q[inc][m] - result;
 		}
 
 		//Store norm of Q in R
 		R[m][m] = normCol(q, n, n, m);
 
 		//Divide Q by norm of Q which is stored in R
-		for (int i = 0;i < n;i++) {
-			q[i][m] = q[i][m] / R[m][m];
+		for (int ip = 0;ip < n;ip++) {
+			q[ip][m] = q[ip][m] / R[m][m];
 		}
 	}
 
@@ -461,22 +460,19 @@ int snrTest(float snrValue){
 	}
 	return 0;
 }
-int main(){
+int OMP(float randy[M][N], float sig[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
-	FILE *phi;
-    phi = fopen("phi.txt", "r");
-
-	for(int row = 0; row < M; row++){
-		for(int col = 0; col < N; col++){
-			 fscanf(phi, "%f", &Rand_Mat[row][col]); //Populate with random values from 0-9
+	for (int it = 0;it <N;it++) {
+			x[it] = sig[it];  //Create a normalized vector with values all <1
+	}
+	for (int ro = 0;ro <M;ro++) {
+		for(int co = 0; co < N; co ++){
+				Rand_Mat[ro][co] = randy[ro][co];  //Create a normalized vector with values all <1
 		}
 	}
-
-	fclose(phi);
 	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
-	float x[N];
 	float y[M];
 	float x_hat[N];
 
@@ -484,15 +480,6 @@ int main(){
 	int iterationCounter;
 	int ii;
 
-	FILE *myFile;
-    myFile = fopen("../Testing/inputSignal.txt", "r");
-
-
-    for (i = 0; i < 256; i++){
-        fscanf(myFile, "%f", &x[i]);
-    }
-
-    fclose(myFile);
 	/**
 	for (i = 0;i <N;i=i+1) {
 		x[i] = 0;  //Create a normalized vector with values all <1
@@ -648,18 +635,26 @@ int main(){
 		matSubtraction(M, 1, y, A_x_h, r); //r = y - A*s_hat;
 		
 	}
-	
+
 	printf("Printing X AND Approximation\n");
 	for (i = 0;i <N;i=i+1) {
 		printf("Index %d: (Original) %.10f (Approximated) %.10f\n", i, x[i], x_hat[i]);
 	}
 	
 	snrValue=SNR(x, x_hat, N);
+	/**#ifndef __SYNTHESIS__
+		FILE *fp1; // The following code is ignored for synthesis
+		fp1 = fopen("out.txt", "w");
+		fprintf(fp1,"SNR %f ", snrValue);
+		fclose(fp1);
+	#endif
+*/
 	int testResult = snrTest(snrValue);
 	if(testResult==0){
 		return 1;
 	}
 	return 0; 
+
 }
 
 	
