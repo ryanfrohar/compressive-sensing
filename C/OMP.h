@@ -6,6 +6,8 @@
 #define S 15 // Sparsity
 
 int OMP(float randy[M][N], float sig[N]);
+void inputRand(int Rand [M][N]);
+
 
 #endif
 

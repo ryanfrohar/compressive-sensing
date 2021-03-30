@@ -5,6 +5,8 @@
 #include <time.h>
 
 #define SIZE 16384
+#define M 64
+#define N 256
 int MAX_RAND=9;
 
 int main(){
@@ -12,7 +14,7 @@ int main(){
 
 	int phi[SIZE];
 	int i;
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	FILE *f = fopen("phi.txt", "w");
 
@@ -29,6 +31,7 @@ int main(){
 			phi[i]+=1;
 		}
 	}
+
 	for (i = 0;i <SIZE;i=i+1) {
 		fprintf(f, "%d\n", phi[i]);
 	}

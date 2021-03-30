@@ -6,11 +6,13 @@
 
 
 //ENV Variables
-float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
-float x[N];
+int Rand_Mat[M][N]; //Matrix composed of the measurements and samples
+int x[N];
 int NumberFound = 0;  // Number of max indexes found
-float MAX_RAND=7.0;
+int MAX_RAND;
 float snrValue=0;
+
+
 
 /**
 Function to return inner product of a specific column of a matrix and a row vector.
@@ -58,8 +60,8 @@ void matMultiplication(int m, int n, int p, float matrix1[m][n], float matrix2[n
         		result[i][j]=0;  // Initialize result vector values as 0
         		for(k=0;k<n;k++){
             			result[i][j]+=matrix1[i][k] * matrix2[k][j];  // Multiply matrix1 by matrix2 and store the value in the result vector/matrix
+            			//printf("%f = %f * %f \n",result[i][j], matrix1[i][k], matrix2[k][j]);
         		}
-			//printf("%d\n",result[i][j]);
 		}
 	}
 }
@@ -421,6 +423,13 @@ void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
 	return;
 }
 
+void compressor(float sigX[N], float xcompressed[M], float phi[M][N]){
+	matMultiplication(M, N, 1, phi, sigX, xcompressed);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
+	return;
+}
+
+
+
 float meanSquareError(int n, float a[n], float b[n]){
 	float error;
 	float mse = 0;
@@ -457,20 +466,22 @@ int snrTest(float snrValue){
 	}
 	return 0;
 }
-int OMP(float randy[M][N], float sig[N]){
+
+int OMP(int xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
-	for (int it = 0;it <N;it++) {
-			x[it] = sig[it];  //Create a normalized vector with values all <1
+
+	int y[M];
+
+	for (int it = 0;it <M;it++) {
+			y[it] = xsig[it];  //Create a normalized vector with values all <1
 	}
-	for (int ro = 0;ro <M;ro++) {
-		for(int co = 0; co < N; co ++){
-				Rand_Mat[ro][co] = randy[ro][co];  //Create a normalized vector with values all <1
-		}
-	}
+	
+	inputRand(Rand_Mat);
+
 	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64
-	float y[M];
+
 	float x_hat[N];
 
 	int i, j;
@@ -490,7 +501,7 @@ int OMP(float randy[M][N], float sig[N]){
 	x[150]= 14.0;
 	**/
 
-	matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
+	//matMultiplication(M, N, 1, Rand_Mat, x, y);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 	
 	/**
 	//PRINTING X
@@ -634,12 +645,11 @@ int OMP(float randy[M][N], float sig[N]){
 	}
 
 	printf("Algorithm has finished and X has been approximated.\n");
-	printf("Printing X AND Approximation\n");
-	for (i = 0;i <N;i=i+1) {
-		printf("Index %d: (Original) %.10f (Approximated) %.10f\n", i, x[i], x_hat[i]);
+	for (int z = 0;z <N;z++) {
+			reconstructedX[z] = x_hat[z];  //Create a normalized vector with values all <1
+			//printf("Index %d is: %f \n", z, reconstructedX[z]);
 	}
-	
-	snrValue=signalToNoise(N, x, x_hat);
+
 
 	/**#ifndef __SYNTHESIS__
 		FILE *fp1; // The following code is ignored for synthesis
@@ -648,10 +658,7 @@ int OMP(float randy[M][N], float sig[N]){
 		fclose(fp1);
 	#endif
 */
-	int testResult = snrTest(snrValue);
-	if(testResult==0){
-		return 1;
-	}
+
 	return 0; 
 
 }
