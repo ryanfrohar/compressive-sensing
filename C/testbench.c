@@ -100,6 +100,9 @@ int main(){
 
 	float Rand [M][N];
 	float xsig [N];
+	float compressedXSig [M];
+	float reconstructedX [N];
+
 
 	FILE *phi;
 	phi = fopen("phi.txt", "r");
@@ -111,11 +114,31 @@ int main(){
 
 	fclose(phi);
 	FILE *myFile;
-	myFile = fopen("../Testing/inputSignal.txt", "r");
+	myFile = fopen("inputSignal.txt", "r");
 	for (int i = 0; i < N; i++){
 		fscanf(myFile, "%f", &xsig[i]);
 	}
 	fclose(myFile);
-	OMP(Rand,xsig);
+
+	//Compresses original signal to an undersampled version
+	compressor(xsig, compressedXSig, Rand);
+
+	//OMP Algorithm takes the compressed signal and by using the random matrix it returns an approximation of the original signal in reconstructedX
+	OMP(Rand, compressedXSig, reconstructedX);
+
+	printf("Printing X AND Approximation\n");
+	for(int j = 0;j <N;j=j+1) {
+		printf("Index %d: (Original) %.10f (Approximated) %.10f\n", j, xsig[j], reconstructedX[j]);
+	}
+
+	int snrValue=signalToNoise(N, xsig, reconstructedX);
+
+	int testResult = snrTest(snrValue);
+
+	if(testResult==0){
+		return 1;
+	}
+
+	return 0;
 
 }
