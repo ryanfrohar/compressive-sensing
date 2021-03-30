@@ -99,14 +99,14 @@ ALL TIMES.
 int main(){
 
 	int xsig[N];
-	float compressedXSig [M];
+	int compressedXSig [M];
 	int reconstructedX [N];
 
 
 	FILE *myFile;
 	myFile = fopen("../Sampling/compressed.txt", "r");
 	for (int i = 0; i < M; i++){
-		fscanf(myFile, "%f", &compressedXSig[i]);
+		fscanf(myFile, "%d", &compressedXSig[i]);
 
 	}
 	fclose(myFile);

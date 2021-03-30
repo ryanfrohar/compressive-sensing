@@ -467,14 +467,14 @@ int snrTest(float snrValue){
 	return 0;
 }
 
-int OMP(float xsig[M], int reconstructedX[N]){
+int OMP(int xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 
 	float y[M];
 
 	for (int it = 0;it <M;it++) {
-			y[it] = xsig[it];  //Create a normalized vector with values all <1
+			y[it] = (float) xsig[it];  //Create a normalized vector with values all <1
 	}
 	
 	inputRand(Rand_Mat);
