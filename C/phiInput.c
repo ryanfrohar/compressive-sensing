@@ -4,7 +4,7 @@
 #include <math.h>
 #include "OMP.h"
 
-void inputRand(int Rand [M][N]){
+void inputRand(float Rand [M][N]){
 	Rand[0][0]=4;
 	Rand[0][1]=7;
 	Rand[0][2]=5;

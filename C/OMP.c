@@ -6,10 +6,10 @@
 
 
 //ENV Variables
-int Rand_Mat[M][N]; //Matrix composed of the measurements and samples
-int x[N];
+float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
+float x[N];
 int NumberFound = 0;  // Number of max indexes found
-int MAX_RAND;
+float MAX_RAND=7.0;
 float snrValue=0;
 
 
@@ -430,23 +430,23 @@ void compressor(float sigX[N], float xcompressed[M], float phi[M][N]){
 
 
 
-float meanSquareError(int n, float a[n], float b[n]){
+float meanSquareError(int n, int a[n], int b[n]){
 	float error;
 	float mse = 0;
 	for (int i = 0; i<n; i++){
-		error = a[i] - b[i];
+		error = (float) a[i] - b[i];
 		mse += error*error;
 	}
 	return mse;
 }
 
-float signalToNoise(int n, float a[n], float b[n]){
+float signalToNoise(int n, int a[n], int b[n]){
 	int l;
 	float snr;
 	float mse = meanSquareError(n, a, b);
 	float sigPower = 0;
 	for (int i = 0; i<n; i++){
-		sigPower += a[i] * a[i];
+		sigPower += (float) a[i] * a[i];
 	}
 
 	printf("The mean square error of the approximation is: %d \n",(int) mse);
@@ -467,11 +467,11 @@ int snrTest(float snrValue){
 	return 0;
 }
 
-int OMP(int xsig[M], int reconstructedX[N]){
+int OMP(float xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 
-	int y[M];
+	float y[M];
 
 	for (int it = 0;it <M;it++) {
 			y[it] = xsig[it];  //Create a normalized vector with values all <1
@@ -533,7 +533,7 @@ int OMP(int xsig[M], int reconstructedX[N]){
 
 	printf("Algorithm has began approximation of X\n");
 
-	for(iterationCounter=0; iterationCounter<S; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<15; iterationCounter++){
 		//printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
 		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
@@ -646,7 +646,7 @@ int OMP(int xsig[M], int reconstructedX[N]){
 
 	printf("Algorithm has finished and X has been approximated.\n");
 	for (int z = 0;z <N;z++) {
-			reconstructedX[z] = x_hat[z];  //Create a normalized vector with values all <1
+			reconstructedX[z] = (int) round(x_hat[z]);  //Create a normalized vector with values all <1
 			//printf("Index %d is: %f \n", z, reconstructedX[z]);
 	}
 

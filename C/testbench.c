@@ -98,24 +98,35 @@ ALL TIMES.
 
 int main(){
 
-	float Rand [M][N];
-	float xsig [N];
+	int xsig[N];
+	float compressedXSig [M];
+	int reconstructedX [N];
 
-	FILE *phi;
-	phi = fopen("phi.txt", "r");
-	for(int row = 0; row < M; row++){
-		for(int col = 0; col < N; col++){
-				fscanf(phi, "%f", &Rand[row][col]); //Populate with random values from 0-9
-		}
-	}
 
-	fclose(phi);
 	FILE *myFile;
-	myFile = fopen("../Testing/inputSignal.txt", "r");
-	for (int i = 0; i < N; i++){
-		fscanf(myFile, "%f", &xsig[i]);
+	myFile = fopen("../Sampling/compressed.txt", "r");
+	for (int i = 0; i < M; i++){
+		fscanf(myFile, "%f", &compressedXSig[i]);
+
 	}
 	fclose(myFile);
-	OMP(Rand,xsig);
+
+	FILE *myFile2;
+	myFile2 = fopen("../Sampling/samples.txt", "r");
+	for (int i = 0; i < N; i++){
+		fscanf(myFile2, "%d", &xsig[i]);
+	}
+	fclose(myFile2);
+	//Compresses original signal to an undersampled version
+	//compressor(xsig, compressedXSig, Rand);
+
+	//OMP Algorithm takes the compressed signal and by using the random matrix it returns an approximation of the original signal in reconstructedX
+	OMP(compressedXSig, reconstructedX);
+
+	printf("Printing X AND Approximation\n");
+	for(int j = 0;j <N;j=j+1) {
+		printf("Index %d: (Original) %d (Approximated) %d\n", j, xsig[j], reconstructedX[j]);
+	}
+
 
 }
