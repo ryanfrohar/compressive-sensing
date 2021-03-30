@@ -8,6 +8,8 @@ MISO = 10
 SCLK = 15
 CE0 = 7
 file = open("../Sampling/compressed.txt", "r")
+approx = open("approximation.txt", "w+")
+
 
 def initspi():
     GPIO.setmode(GPIO.BOARD)
@@ -23,7 +25,7 @@ def sendbyte(cc):
     GPIO.output(CE0, GPIO.LOW)
     for i in range (0, len(bitsx)):
         bitsx[i] = int(bitsx[i])
-    #set MOSI signal level    
+    #set MOSI signal level
     for x in range(8):
         if (bitsx[x]>0):
             GPIO.output(MOSI, GPIO.HIGH)
@@ -57,12 +59,15 @@ if __name__ == '__main__':     # Program start from here
         for line in lines:
             sendbyte(int(line))
         
+        
+        sleep(300)
+        approximation = []
+       
+        for x in range(0, 256):
+            approximation.append(receivebyte())
+            approx.write('%s\n' % approximation[x])
+        
+        
             
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
         destroy()
-
-
-
-    
-    
-sendbyte(7)
