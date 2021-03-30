@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "stdio.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
 #include "OMP.h"
@@ -467,7 +468,7 @@ int snrTest(float snrValue){
 	return 0;
 }
 
-int OMP(int xsig[M], int reconstructedX[N]){
+int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 
@@ -477,7 +478,11 @@ int OMP(int xsig[M], int reconstructedX[N]){
 			y[it] = (float) xsig[it];  //Create a normalized vector with values all <1
 	}
 	
-	inputRand(Rand_Mat);
+	for (int ro = 0;ro <M;ro++) {
+			for(int co = 0; co < N; co ++){
+					Rand_Mat[ro][co] = randy[ro][co];  //Create a normalized vector with values all <1
+			}
+		}
 
 	//printMatrix(M, N, Rand_Mat);
 	//N=256, M=64

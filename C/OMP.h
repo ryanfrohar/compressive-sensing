@@ -5,8 +5,8 @@
 #define N 256 // Amount of samples
 #define S 15 // Sparsity
 
-int OMP(int xsig[M], int reconstructedX[N]);
-void inputRand(float Rand [M][N]);
+int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]);
+//void inputRand(float Rand [M][N]);
 
 
 #endif
