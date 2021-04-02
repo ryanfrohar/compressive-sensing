@@ -11,7 +11,7 @@
   * Files in Testing folder
 * Authors 
 
-# Welcome to the ReadMe for the Compressive-Sensing Project
+# Welcome to the Compressive-Sensing Project
 The Compressive Sensing project was developed as a fourth year capstone project at Carleton Univeristy by the authors listed at the end of this document. This project was developed over a span of 8 months with project planning, research and then development.
 
 This ReadMe will walk you through the folders and files for the project as well as their functionalities along with how to execute them.
