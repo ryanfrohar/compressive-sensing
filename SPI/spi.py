@@ -65,7 +65,7 @@ if __name__ == '__main__':     # Program start from here
             sendbyte(int(line))
         
         
-        sleep(300)
+        sleep(20)
         approximation = []
        
         for x in range(0, 64):
