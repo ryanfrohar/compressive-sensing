@@ -3,10 +3,10 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-MOSI = 5
-MISO = 10
-SCLK = 15
-CE0 = 7
+MOSI = 19
+MISO = 21
+SCLK = 23
+CE0 = 24
 compressed = open("../Sampling/compressed.txt", "r")
 approx = open("approximation.txt", "w+")
 
