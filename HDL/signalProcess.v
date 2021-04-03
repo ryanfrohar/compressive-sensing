@@ -27,7 +27,7 @@ input SCK, SSEL, MOSI;
 
 output MISO;
 
-reg [7:0] dataByte;
+wire [7:0] dataByte;
 wire [7:0] sendByte;
 
 reg [7:0] compressedX [63:0];
@@ -37,11 +37,11 @@ reg [5:0] outputCounter = 6'b000000;
 reg byte_receieved;
 reg signalReceived;
 
-reg byteSent;
+wire byteSent;
 reg signalSent;
 
 integer i=0;
-integer j=0
+integer j=0;
 
 assign sendByte = compressedX[j];
 
@@ -64,6 +64,7 @@ end
 always @(posedge clk)
 begin
   signalReceived <= (inputCounter == 6'b111111);
+  
 end
 
 sending sB(.clk(clk), .SCK(SCK), .MISO(MISO), .SSEL(SSEL), .data(sendByte), .signalReceived(signalReceived), .byteSent(byteSent));
@@ -82,7 +83,7 @@ end
 
 always @(posedge clk)
 begin
-  signalReceived <= (outputCounter == 6'b111111);
+  signalSent <= (outputCounter == 6'b111111);
 end
 
 
