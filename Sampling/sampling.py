@@ -11,16 +11,22 @@ sample = 0
 def setup():
     print ('Program is starting...')
     GPIO.setmode(GPIO.BCM)       # Numbers GPIOs by physical location
-    GPIO.setup(samplingPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)    # Set buttonPin's mode is input, and pull up to high level(3.3V)
+    GPIO.setup(samplingPin, GPIO.IN)    # Set buttonPin's mode is input, and pull up to high level(3.3V)
 
 def loop():
+    last=0
     for x in range(numSamples):
         if GPIO.input(samplingPin):
-            sample = 0
+            if last==0:
+                sample = 1
+                last = sample
+                file.write(str(sample) + '\n')
+            sleep(0.05)
         else: 
-            sample = 1
-        file.write(str(sample) + '\n')
-        sleep(0.1)
+            sample = 0
+            last=sample
+            sleep(0.01)
+            file.write(str(sample) + '\n')
 
 def destroy():
     file.close()
