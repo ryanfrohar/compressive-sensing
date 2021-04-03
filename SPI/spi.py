@@ -7,7 +7,7 @@ MOSI = 5
 MISO = 10
 SCLK = 15
 CE0 = 7
-file = open("../Sampling/compressed.txt", "r")
+compressed = open("../Sampling/compressed.txt", "r")
 approx = open("approximation.txt", "w+")
 
 
@@ -22,9 +22,11 @@ def initspi():
 def sendbyte(cc):
     c='{0:08b}'.format(cc)
     bitsx = list(c)
-    GPIO.output(CE0, GPIO.LOW)
+    #Since list() returns String, must convert to integer for transmission
     for i in range (0, len(bitsx)):
         bitsx[i] = int(bitsx[i])
+
+    GPIO.output(CE0, GPIO.LOW)
     #set MOSI signal level
     for x in range(8):
         if (bitsx[x]>0):
@@ -55,7 +57,7 @@ def receivebyte():
 if __name__ == '__main__':     # Program start from here
     initspi()
     try:
-        lines= file.readlines()
+        lines= compressed.readlines()
         for line in lines:
             sendbyte(int(line))
         
