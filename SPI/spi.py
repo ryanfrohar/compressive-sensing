@@ -33,7 +33,6 @@ def sendbyte(cc):
             GPIO.output(MOSI, GPIO.HIGH)
         else:
             GPIO.output(MOSI, GPIO.LOW)
-    print('\n')
         #clock    
         GPIO.output(SCLK, GPIO.LOW)
         GPIO.output(SCLK, GPIO.HIGH)
@@ -63,16 +62,15 @@ if __name__ == '__main__':     # Program start from here
     try:
         lines= compressed.readlines()
         for line in lines:
-            #sendbyte(int(line))
+            sendbyte(int(line))
         
         
         sleep(20)
         approximation = []
        
         for x in range(0, 64):
-            #approximation.append(receivebyte())
-            approximation.append(x)
-            approx.write(str(approximation[x] + "\n"))
+            approximation.append(receivebyte())
+            approx.write(str(approximation[x]) + "\n")
         
         
             
