@@ -33,6 +33,7 @@ def sendbyte(cc):
             GPIO.output(MOSI, GPIO.HIGH)
         else:
             GPIO.output(MOSI, GPIO.LOW)
+    print('\n')
         #clock    
         GPIO.output(SCLK, GPIO.LOW)
         GPIO.output(SCLK, GPIO.HIGH)
