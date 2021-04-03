@@ -36,9 +36,10 @@ def sendbyte(cc):
         #clock    
         GPIO.output(SCLK, GPIO.LOW)
         GPIO.output(SCLK, GPIO.HIGH)
-    GPIO.output(CE0, GPIO.HIGH)
     GPIO.output(SCLK, GPIO.LOW)
     GPIO.output(SCLK, GPIO.HIGH)
+    GPIO.output(CE0, GPIO.HIGH)
+    
 
 def receivebyte():
     GPIO.output(SCLK, GPIO.LOW)
@@ -51,6 +52,8 @@ def receivebyte():
         out = out*2
         if GPIO.input(MISO):
             out = out +1
+    GPIO.output(SCLK, GPIO.LOW)
+    GPIO.output(SCLK, GPIO.HIGH)
     GPIO.output(CE0, GPIO.HIGH)
     return out
 
