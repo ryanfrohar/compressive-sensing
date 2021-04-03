@@ -32,7 +32,7 @@ wire [7:0] dataByte;
 wire [7:0] sendByte;
 
 reg [7:0] compressedX [63:0];
-reg [5:0] inputCounter = 6'b000000;
+reg [6:0] inputCounter = 7'b0000000;
 reg [5:0] outputCounter = 6'b000000;
 
 reg byte_receieved;
@@ -50,13 +50,13 @@ signalReceive srA(.clk(clk), .SCK(SCK), .MOSI(MOSI), .byteReceived(byte_received
 
 always @(posedge clk)
 begin 
-  if(~(inputCounter == 6'b111111))
+  if(~(inputCounter == 7'b1000000))
   begin
     if(byte_received)
     begin
       compressedX[i] <= dataByte;
       i=i+1;
-      inputCounter <= inputCounter + 6'b000001; 
+      inputCounter <= inputCounter + 7'b0000001; 
     end
   end
 end
