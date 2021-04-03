@@ -4,9 +4,12 @@ input clk;
 input SCK;
 output MISO;
 input SSEL;
-input signalReceived;
 input [7:0] data;
+input signalReceived;
 output byteSent;
+
+reg byte_sent;
+assign byteSent = byte_sent;
 
 reg [7:0] byte_data_sent=data;
 
@@ -57,7 +60,7 @@ end
 
 always @(posedge clk)
 begin
-  byteSent <= SSEL_active && SCK_risingedge && (bitcnt==3'b111);
+  byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
 end
 
 assign MISO = byte_data_sent[7];  // send MSB first
