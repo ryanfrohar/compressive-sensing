@@ -55,9 +55,9 @@ begin
       if(byte_sent_2clk || firstTime)
       begin
         byte_data_sent <= data;
-        firstTime = 1'b0;
+        firstTime <= 1'b0;
       end
-      if(SCK_risingedge)
+      if(SCK_fallingedge)
       begin
         cnt <= cnt + 3'b001;
         byte_data_sent <= {byte_data_sent[6:0], 1'b1};
@@ -78,7 +78,7 @@ begin
     begin
       byte_sent_2clk <= 1'b1;
     end
-    byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
+    byte_sent <= SSEL_active && SCK_fallingedge && (cnt==3'b111);
   end
 end
 
