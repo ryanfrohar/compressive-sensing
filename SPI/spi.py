@@ -63,15 +63,16 @@ if __name__ == '__main__':     # Program start from here
     try:
         lines= compressed.readlines()
         for line in lines:
-            sendbyte(int(line))
+            #sendbyte(int(line))
         
         
         sleep(20)
         approximation = []
        
         for x in range(0, 64):
-            approximation.append(receivebyte())
-            approx.write('%s\n' % approximation[x])
+            #approximation.append(receivebyte())
+            approximation.append(x)
+            approx.write(str(approximation[x] + "\n"))
         
         
             
