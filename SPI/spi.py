@@ -26,19 +26,22 @@ def sendbyte(cc):
     for i in range (0, len(bitsx)):
         bitsx[i] = int(bitsx[i])
 
-    GPIO.output(CE0, GPIO.LOW)
+    #GPIO.output(CE0, GPIO.LOW)
     #set MOSI signal level
     for x in range(8):
         if (bitsx[x]>0):
-            GPIO.output(MOSI, GPIO.HIGH)
+            #GPIO.output(MOSI, GPIO.HIGH)
+            print('1\n')
         else:
-            GPIO.output(MOSI, GPIO.LOW)
+            print('0\n')
+            #GPIO.output(MOSI, GPIO.LOW)
+        print('\n')
         #clock    
-        GPIO.output(SCLK, GPIO.LOW)
-        GPIO.output(SCLK, GPIO.HIGH)
-    GPIO.output(SCLK, GPIO.LOW)
-    GPIO.output(SCLK, GPIO.HIGH)
-    GPIO.output(CE0, GPIO.HIGH)
+        #GPIO.output(SCLK, GPIO.LOW)
+        #GPIO.output(SCLK, GPIO.HIGH)
+    #GPIO.output(SCLK, GPIO.LOW)
+    #GPIO.output(SCLK, GPIO.HIGH)
+    #GPIO.output(CE0, GPIO.HIGH)
     
 
 def receivebyte():
@@ -68,9 +71,9 @@ if __name__ == '__main__':     # Program start from here
         sleep(20)
         approximation = []
        
-        for x in range(0, 64):
-            approximation.append(receivebyte())
-            approx.write('%s\n' % approximation[x])
+        #for x in range(0, 64):
+            #approximation.append(receivebyte())
+            #approx.write('%s\n' % approximation[x])
         
         
             
