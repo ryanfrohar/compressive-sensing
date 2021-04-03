@@ -52,10 +52,14 @@ begin
     end
     else
     begin
-      if(byte_sent_2clk || firstTime)
+      if(firstTime)
+      begin 
+        byte_data_sent <= 8'b00000001
+        firstTime <= 1'b0;
+      end
+      if(byte_sent_2clk)
       begin
         byte_data_sent <= data;
-        firstTime <= 1'b0;
       end
       if(SCK_fallingedge)
       begin
