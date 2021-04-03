@@ -65,15 +65,18 @@ end
 
 always @(posedge clk)
 begin
-  if (byte_sent_2clk)
+  if(signalReceived)
   begin
-    byte_sent_2clk = 1'b0;
+    if (byte_sent_2clk)
+    begin
+      byte_sent_2clk <= 1'b0;
+    end
+    if (byte_sent)
+    begin
+      byte_sent_2clk <= 1'b1;
+    end
+    byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
   end
-  if (byte_sent)
-  begin
-    byte_sent_2clk = 1'b1;
-  end
-  byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
 end
 
 assign MISO = byte_data_sent[7];  // send MSB first
