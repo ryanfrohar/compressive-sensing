@@ -54,7 +54,7 @@ begin
     begin
       if(firstTime)
       begin 
-        byte_data_sent <= 8'b00000001
+        byte_data_sent <= 8'b00000001;
         firstTime <= 1'b0;
       end
       if(byte_sent_2clk)
