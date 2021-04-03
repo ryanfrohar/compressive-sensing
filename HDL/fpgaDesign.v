@@ -90,6 +90,6 @@ end
 always @(posedge clk)
 begin    
     byte_received <= SSEL_active && SCK_risingedge && (bitcnt==3'b111);
-end
+end 
 
 endmodule

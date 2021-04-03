@@ -11,6 +11,8 @@ output byteSent;
 reg byte_sent;
 assign byteSent = byte_sent;
 
+reg firstTime = 1'b1;
+
 reg [7:0] byte_data_sent;
 reg byte_sent_2clk = 1'b0;
 
@@ -50,9 +52,10 @@ begin
     end
     else
     begin
-      if(byte_sent_2clk)
+      if(byte_sent_2clk || firstTime)
       begin
         byte_data_sent <= data;
+        firstTime = 1'b0;
       end
       if(SCK_risingedge)
       begin
