@@ -12,6 +12,7 @@ reg byte_sent;
 assign byteSent = byte_sent;
 
 reg [7:0] byte_data_sent;
+reg byte_sent_2clk = 1'b0;
 
 reg [2:0] cnt;
 
@@ -43,13 +44,16 @@ always @(posedge clk)
 begin
   if(signalReceived)
   begin
-    byte_data_sent <= data;
     if(~SSEL_active) 
     begin
       cnt<=3'b000;  // count the messages
     end
     else
     begin
+      if(byte_sent_2clk)
+      begin
+        byte_data_sent <= data;
+      end
       if(SCK_risingedge)
       begin
         cnt <= cnt + 3'b001;
@@ -61,6 +65,14 @@ end
 
 always @(posedge clk)
 begin
+  if (byte_sent_2clk)
+  begin
+    byte_sent_2clk = 1'b0;
+  end
+  if (byte_sent)
+  begin
+    byte_sent_2clk = 1'b1;
+  end
   byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
 end
 

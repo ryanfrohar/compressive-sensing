@@ -20,12 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module signalProcess(clk, SCK, MOSI, MISO, SSEL);
+module signalProcess(clk, SCK, MOSI, MISO, SSEL, led1, led2, led3, led4);
 input clk;
 
 input SCK, SSEL, MOSI;
 
 output MISO;
+output led1;
+output led2;
+output led3;
+output led4;
+
 
 wire [7:0] dataByte;
 wire [7:0] sendByte;
@@ -43,7 +48,11 @@ reg signalSent;
 integer i=0;
 integer j=0;
 
-assign sendByte = compressedX[j];
+assign sendByte = compressedX[0];
+assign led1 = sendByte[0];
+assign led2 = sendByte[1];
+assign led3 = sendByte[2];
+assign led4 = sendByte[3];
 
 signalReceive srA(.clk(clk), .SCK(SCK), .MOSI(MOSI), .byteReceived(byte_received), .dataByte(dataByte), .SSEL(SSEL));
 
