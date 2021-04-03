@@ -68,7 +68,7 @@ if __name__ == '__main__':     # Program start from here
         sleep(300)
         approximation = []
        
-        for x in range(0, 256):
+        for x in range(0, 64):
             approximation.append(receivebyte())
             approx.write('%s\n' % approximation[x])
         
