@@ -63,7 +63,7 @@ end
 
 always @(posedge clk)
 begin
-  signalReceived <= (inputCounter == 6'b111111);
+  signalReceived <= (inputCounter == 7'1000000);
   
 end
 
