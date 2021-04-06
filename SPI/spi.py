@@ -8,6 +8,7 @@ MISO = 21
 SCLK = 23
 CE0 = 24
 compressed = open("../Sampling/compressed.txt", "r")
+phi = open("../Sampling/phi.txt", "r")
 approx = open("approximation.txt", "w+")
 
 
@@ -20,6 +21,7 @@ def initspi():
     GPIO.setup(CE0, GPIO.OUT)
     
 def sendbyte(cc):
+    GPIO.output(CE0, GPIO.HIGH)
     c='{0:08b}'.format(cc)
     bitsx = list(c)
     #Since list() returns String, must convert to integer for transmission
@@ -36,9 +38,9 @@ def sendbyte(cc):
         #clock    
         GPIO.output(SCLK, GPIO.LOW)
         GPIO.output(SCLK, GPIO.HIGH)
+    GPIO.output(CE0, GPIO.HIGH)
     GPIO.output(SCLK, GPIO.LOW)
     GPIO.output(SCLK, GPIO.HIGH)
-    GPIO.output(CE0, GPIO.HIGH)
     
 
 def receivebyte():
@@ -47,13 +49,11 @@ def receivebyte():
     out= 0b0
     #read 8 bits in MISO
     for x in range(8):
-        GPIO.output(SCLK, GPIO.LOW)
-        GPIO.output(SCLK, GPIO.HIGH)
         out = out*2
         if GPIO.input(MISO):
             out = out +1
-    GPIO.output(SCLK, GPIO.LOW)
-    GPIO.output(SCLK, GPIO.HIGH)
+        GPIO.output(SCLK, GPIO.LOW)
+        GPIO.output(SCLK, GPIO.HIGH)
     GPIO.output(CE0, GPIO.HIGH)
     return out
 
@@ -63,14 +63,18 @@ if __name__ == '__main__':     # Program start from here
         lines= compressed.readlines()
         for line in lines:
             sendbyte(int(line))
+            
+        linesPhi= phi.readlines()
+        for lineP in linesPhi:
+            sendbyte(int(lineP))
         
-        
-        sleep(20)
+        sleep(40)
         approximation = []
        
-        for x in range(0, 64):
+        for x in range(0, 257):
             approximation.append(receivebyte())
-            approx.write(str(approximation[x]) + "\n")
+            if x!=0:
+                approx.write(str(approximation[x]) + "\n")
         
         
             
