@@ -1,9 +1,10 @@
-module sending(clk, SCK, MISO, SSEL, data, signalReceived, byteSent);
+module sending(clk, SCK, MISO, SSEL, done, data, signalReceived, byteSent);
 
 input clk;
 input SCK;
 output MISO;
 input SSEL;
+input done;
 input [7:0] data;
 input signalReceived;
 output byteSent;
@@ -44,7 +45,7 @@ wire SSEL_endmessage = (SSELr[2:1]==2'b01);  // message stops at rising edge
 
 always @(posedge clk) 
 begin
-  if(signalReceived)
+  if(signalReceived && done)
   begin
     if(~SSEL_active) 
     begin
@@ -61,7 +62,7 @@ begin
       begin
         byte_data_sent <= data;
       end
-      if(SCK_fallingedge)
+      if(SCK_risingedge)
       begin
         cnt <= cnt + 3'b001;
         byte_data_sent <= {byte_data_sent[6:0], 1'b1};
@@ -72,7 +73,7 @@ end
 
 always @(posedge clk)
 begin
-  if(signalReceived)
+  if(signalReceived && done)
   begin
     if (byte_sent_2clk)
     begin
@@ -82,7 +83,7 @@ begin
     begin
       byte_sent_2clk <= 1'b1;
     end
-    byte_sent <= SSEL_active && SCK_fallingedge && (cnt==3'b111);
+    byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
   end
 end
 
