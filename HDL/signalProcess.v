@@ -49,7 +49,8 @@ integer j=-1;
 integer k=0;
 
 reg [7:0] reconstructed_Signal [255:0];
-assign sendByte = reconstructed_Signal[j];
+//assign sendByte = reconstructed_Signal[j];
+assign sendByte = compressedX[j];
 
 signalReceive srA(.clk(clk), .SCK(SCK), .MOSI(MOSI), .byteReceived(byte_received), .dataByte(dataByte), .SSEL(SSEL));
 
@@ -65,7 +66,7 @@ begin
     end
   end
 end
-
+/**
 always @(posedge clk)
 begin
  if(signalReceived && ~randReceived)
@@ -78,13 +79,17 @@ begin
     end
   end
 end
-
+*/
 always @(posedge clk)
 begin
   signalReceived <= (inputCounter == 7'b1000000);
-  randReceived <= (randCounter == 15'b100000000000000);
 end
-
+/**
+always @(posedge clk)
+begin
+  randReceived <= (randCounter >= 15'b100000000000000);
+end
+*/
 
 /**
 OMP STUFF
@@ -99,11 +104,11 @@ initial begin
     end
 end
 **/
-
+/**
 wire ap_rst;
 assign ap_rst =1'b0;
 wire ap_start;
-assign ap_start = randReceived;
+assign ap_start = signalReceived;
 wire ap_done;
 wire ap_idle;
 wire ap_ready;
@@ -158,13 +163,13 @@ begin
         xsig_q0 <= {24'b0, compressedX[xsig_address0]};
     end
 end
+**/
 
-
-sending sB(.clk(clk), .SCK(SCK), .MISO(MISO), .SSEL(SSEL), .done(ap_done), .data(sendByte), .signalReceived(randReceived), .byteSent(byteSent));
+sending sB(.clk(clk), .SCK(SCK), .MISO(MISO), .SSEL(SSEL), .data(sendByte), .signalReceived(signalReceived), .byteSent(byteSent));
 
 always @(posedge clk)
 begin
-  if(randReceived && ap_done)
+  if(signalReceived)
   begin
     if(byteSent)
     begin
