@@ -39,8 +39,6 @@ def sendbyte(cc):
         GPIO.output(SCLK, GPIO.LOW)
         GPIO.output(SCLK, GPIO.HIGH)
     GPIO.output(CE0, GPIO.HIGH)
-    GPIO.output(SCLK, GPIO.LOW)
-    GPIO.output(SCLK, GPIO.HIGH)
     
 
 def receivebyte():
