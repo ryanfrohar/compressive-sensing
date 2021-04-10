@@ -11,7 +11,7 @@ output byteSent;
 reg byte_sent;
 assign byteSent = byte_sent;
 
-reg firstTime = 1'b1;
+//reg firstTime = 1'b1;
 
 reg [7:0] byte_data_sent;
 reg byte_sent_2clk = 1'b0;
@@ -52,19 +52,14 @@ begin
     end
     else
     begin
-      if(firstTime)
-      begin 
-        byte_data_sent <= 8'b00000001;
-        firstTime <= 1'b0;
-      end
       if(byte_sent_2clk)
       begin
         byte_data_sent <= data;
       end
-      if(SCK_fallingedge)
+      if(SCK_risingedge)
       begin
         cnt <= cnt + 3'b001;
-        byte_data_sent <= {byte_data_sent[6:0], 1'b1};
+        byte_data_sent <= {byte_data_sent[6:0], 1'b0};
       end
     end
   end
@@ -81,8 +76,12 @@ begin
     if (byte_sent)
     begin
       byte_sent_2clk <= 1'b1;
+      byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
     end
-    byte_sent <= SSEL_active && SCK_fallingedge && (cnt==3'b111);
+    else
+    begin
+      byte_sent <= SSEL_active && SCK_risingedge && (cnt==3'b111);
+    end
   end
 end
 
