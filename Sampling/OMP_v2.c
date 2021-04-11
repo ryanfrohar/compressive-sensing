@@ -4,15 +4,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include "OMP.h"
-#include "ap_cint.h"
-
-
 
 
 //ENV Variables
 float Rand_Mat[M][N]; //Matrix composed of the measurements and samples
 float x[N];
-float y[M];
 int NumberFound = 0;  // Number of max indexes found
 float MAX_RAND=7.0;
 float snrValue=0;
@@ -20,32 +16,33 @@ float snrValue=0;
 
 
 /**
-Function to return dot product of a specific column of a matrix
+Function to return inner product of a specific column of a matrix and a row vector.
 
 vector: Mx1 vector containing float values. (float)
 mulColumn: Index of the column being multiplied in the matrix by the vector. (int)
 */
-float dotProduct(float vector[M], int mulColumn){
+float innerProduct(float vector[M], int mulColumn){
 
 	float total = 0;  // Used to store the total product value of the multiplication
 	// Loop to multiply all elements of the matrix's selected column by the vector's elements
 	for(int i=0; i<M ; i++) {
 
-		total = total + (Rand_Mat[i][mulColumn] * vector[i]);
+		//total = total + *(index + i*N) * *(vector + i);
+		total = total + (Rand_Mat[i][mulColumn] * vector[i]);  // Increment total sum value
 	}
 
-	return total;  // Return the value of the dot product
+	return total;  // Return total sum of the inner product multiplication
 }
 
 /**
 
-Function to calculate the correlation
+Function to calculate the correlation of normalized vector and residual vector
 
 */
-void correlationCalc(float correlation[N],float r[M]){
-	float temp;  // holds dot product result value of residual vector and a given index of random matrix
+void correlationCalc(float correlation[N], float norms[N], float r[M]){
+	float temp;  // Vector to hold inner column multiplication sum value of residual vector and a given index of random matrix
 	for(int i = 0; i<N; i++){
-		temp = dotProduct((float *) r, i);
+		temp = innerProduct((float *) r, i);
 		correlation[i] = fabs(temp);  // Calculate and store correlation value in the correlation array
 	}
 }
@@ -119,7 +116,7 @@ void printMatrixInt(int m,int n, int matrix[m][n]){
 Function to locate index where the max value of an array exist
 
 */
-int find_max(int size, float array[size]){
+int maxIndex(int size, float array[size]){
 	int indexMax = 0;  //Index of the array where the max value exist
 	float max = array[indexMax];  //Initialize the max as the first element of the array
 	for (int i = 0; i < size; i++){
@@ -137,15 +134,14 @@ int find_max(int size, float array[size]){
 Function to calculate the norm of a column in a matrix
 
 */
-float norm(int m, int n, float array[m][n], int C){
+float normCol(float *array, int m, int n, int C){
 	float sum = 0;  //Initialize norm sum of column value
-	float norm = 0;
-
+	float *fixed = array + C ;  //Copy a specified column from the matrix
 	for (int i = 0;i < m;i++){
-		sum = sum + array[i][C] * array[i][C];  //Increment the sum with the normaized value of each element in the specified column
+		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);  //Increment the sum with the normaized value of each element in the specified column
 	}
-	norm =sqrt(sum);  //Square root the summed squared values to get the norm sum
-	return norm;  //Return norm sum
+	sum=sqrt(sum);  //Square root the summed squared values to get the norm sum
+	return sum;  //Return norm sum
 }
 
 /**
@@ -162,10 +158,10 @@ void swap(int *xp, int *yp){
 
 /**
 
-Sort function used to sort max index values from smallest to largest
+Bubble sort function used to sort max index values
 
 */
-void sort(int n, int arr[n]){
+void bubbleSort(int n, int arr[n]){
 	int i, j;
 	for (i = 0; i < n - 1; i++){
 		// Last i elements are already in place
@@ -194,7 +190,7 @@ void unionMat(int *vec, int newval) {
 
 	vec[NumberFound] = newval;  //Add max index to max index set in order according to the number of max index values which have been found
 	NumberFound=NumberFound+1;  //Increment number of max index values which have been found
-	sort(NumberFound, vec);  //Sort to verify that max indexes are in order in the max index set
+	bubbleSort(NumberFound, vec);  //Sort to verify that max indexes are in order in the max index set
 	return;
 }
 
@@ -212,8 +208,7 @@ void transpose(int m, int n, float inputMatrix[m][n], float transposeMatrix[n][m
         }
     }
 }
-/*
-// this portion is not used but was worked on significantly to try and solve least squares
+
 // Function to get cofactor of A[p][q] in temp[][]. n is current
 // dimension of A[][]
 void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n)
@@ -242,10 +237,9 @@ void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n)
 		}
 	}
 }
-*/
+
 /* Recursive function for finding determinant of matrix.
 n is current dimension of A[][]. */
-/*
 float determinant(int q, float A[q][q], int n)
 {
 	float D = 0; // Initialize result
@@ -340,7 +334,7 @@ void magnitude(int p, float matrix1[p], float result[1]){
 }
 
 void testMarko(){
-
+	/**
 	int arr[2][3] = {{3,2,4}, {-4,5,1}};
 	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
 	int result[2][4] = {0};
@@ -353,9 +347,8 @@ void testMarko(){
 	int res[2][2] = {0};
 	MatSubtraction(2,2,arr,arr1,res);
 	printMatrix(2,2,res);
-
+	*/
 }
-
 // Driver program
 int testInverse() {
 	int A[4][4] = { {5, -2, 2, 7},
@@ -375,16 +368,17 @@ int testInverse() {
 
 	return 0;
 }
-*/
+
 /**
 
-The QR decomposition Gram-Schmidt process algorithm decomposes a randMatSquared matrix (A) into two matrices Q and R by using the Gram-Schmidt process.
+The QR algotrithm decomposes a randMatSquared matrix (A) into two matrices Q and R by using the Gram-Schmidt process.
 It is decomposed into an orthogonal and a triangular matrix.
 
 */
-void gramSchmidt(int n, float q[n][n], float R[n][n]) {
-	//followed pseudo code outlined in [31]
+void qr(int n, float q[n][n], float R[n][n]) {
+
 	//Initialize R to be equal to (transpose of Q) x Q
+
 	for (int m = 0;m < n;m++) {
 		for (int i = 0;i < m;i++){
 			float product=0;
@@ -393,7 +387,7 @@ void gramSchmidt(int n, float q[n][n], float R[n][n]) {
 			}
 			R[i][m] = product;
 		}
-		// Calculate Q = Q - sum (Q*R)
+
 		for (int inc = 0;inc < n;inc++) {
 			float result = 0;
 
@@ -406,7 +400,7 @@ void gramSchmidt(int n, float q[n][n], float R[n][n]) {
 		}
 
 		//Store norm of Q in R
-		R[m][m] = norm(n, n,q, m);
+		R[m][m] = normCol(q, n, n, m);
 
 		//Divide Q by norm of Q which is stored in R
 		for (int ip = 0;ip < n;ip++) {
@@ -429,7 +423,7 @@ void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
 	return;
 }
 
-void compressor(float sigX[N][1], float xcompressed[M][1], float phi[M][N]){
+void compressor(float sigX[N], float xcompressed[M], float phi[M][N]){
 	matMultiplication(M, N, 1, phi, sigX, xcompressed);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 	return;
 }
@@ -473,13 +467,14 @@ int snrTest(float snrValue){
 	return 0;
 }
 
-int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
+int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 
+	float y[M];
 
 	for (int it = 0;it <M;it++) {
-			y[it] =  xsig[it];  //Create a normalized vector with values all <1
+			y[it] = (float) xsig[it];  //Create a normalized vector with values all <1
 	}
 
 	for (int ro = 0;ro <M;ro++) {
@@ -495,6 +490,7 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 
 	int i, j;
 	int iterationCounter;
+	int ii;
 
 	/**
 	for (i = 0;i <N;i=i+1) {
@@ -531,6 +527,7 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 	for (i = 0;i < N;i++){
 		x_hat[i]= 0;
 		indexSet[i] = 99999; //Initialize with some value greater than any real possible value
+		norms[i] = normCol(Rand_Mat, M, N, i); //Calculate norm of column of i
 	}
 
 	for (i = 0;i < M;i++) {
@@ -540,13 +537,13 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 
 	printf("Algorithm has began approximation of X\n");
 
-	for(iterationCounter=0; iterationCounter<12; iterationCounter++){
+	for(iterationCounter=0; iterationCounter<15; iterationCounter++){
 		//printf("Iteration %d\n", iterationCounter);
 		//printMatrix(M, 1, r);
-		correlationCalc(correlation,r);  //Calculate correlation of norm vector and residual vector and place results into correction array
+		correlationCalc(correlation, norms, r);  //Calculate correlation of norm vector and residual vector and place results into correction array
 		//printMatrix(N, 1, correlation);
 
-		int maximumIndex= find_max(N, correlation);  //Max index is the index of the max value in the correlation array
+		int maximumIndex= maxIndex(N, correlation);  //Max index is the index of the max value in the correlation array
 		//printf("MAX CORRELATION IS %f\n", correlation[maxIndex]);
 		//printf("Max Index: %d\n", maxIndex);
 		unionMat(indexSet, maximumIndex);
@@ -581,20 +578,20 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 		}
 
 
-		transpose(M, NumberFound, &rand_Mat_Hat, &rand_Mat_Transpose);
+		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
 
 		//printMatrix(NumberFound, M, rand_Mat_Transpose);
 
-		matMultiplication(NumberFound, M, 1, &rand_Mat_Transpose, &y, &transpose_By_Y);
+		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
 
-		matMultiplication(NumberFound, M, NumberFound, &rand_Mat_Transpose, &rand_Mat_Hat, &rand_Mat_Squared);
+		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
 
 		//printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 
-		//int adj[NumberFound][NumberFound]; // To store adjoint of A[][] 
+		//int adj[NumberFound][NumberFound]; // To store adjoint of A[][]
 		/**
 		//HERE
-		float inv[NumberFound][NumberFound]; // To store inverse of A[][] 
+		float inv[NumberFound][NumberFound]; // To store inverse of A[][]
 
 		printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 		inverse(NumberFound, rand_Mat_Squared, inv);
@@ -617,23 +614,23 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 		for (i = 0;i < NumberFound;i++){
 			for (j = 0;j < NumberFound;j++) {
 				//Initialize Q to be equal to A
-				q[i*NumberFound + j] = rand_Mat_Squared[i*NumberFound + j];
+				q[i*NumberFound + j] = *(rand_Mat_Squared + i*NumberFound + j);
 				resultQR[i*NumberFound + j] = 0;
 			}
 		}
-		//hls::qrf<TRANSPOSED_Q, A_ROWS, A_COLS, MATRIX_IN_T, MATRIX_OUT_T>(rand_Mat_Squared, q, ResultQR);
-		gramSchmidt(NumberFound, &q, &resultQR);
+
+		qr(NumberFound, q, resultQR);
 
 
-		transpose(NumberFound, NumberFound, &q, &qt);
+		transpose(NumberFound, NumberFound, q, qt);
 
-		matMultiplication(NumberFound, NumberFound, 1, &qt, &transpose_By_Y, &yQt);
+		matMultiplication(NumberFound, NumberFound, 1, qt, transpose_By_Y, yQt);
 
 		for(i=0;i<M;i++){
 			x_hat_temp[i]=0;
 		}
 
-		backSubstitution(NumberFound, &resultQR, yQt, x_hat_temp);
+		backSubstitution(NumberFound, resultQR, yQt, x_hat_temp);
 
 
 		for ( i = 0;i < NumberFound;i++){
@@ -645,10 +642,10 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 
 
 		float A_x_h[M];
-		matMultiplication(M, N, 1, Rand_Mat, &x_hat, &A_x_h);
+		matMultiplication(M, N, 1, Rand_Mat, x_hat, A_x_h);
 
-		matSubtraction(M, 1, &y, &A_x_h, &r); //r = y - A*s_hat;
-		
+		matSubtraction(M, 1, y, A_x_h, r); //r = y - A*s_hat;
+
 	}
 
 	printf("Algorithm has finished and X has been approximated.\n");
@@ -666,11 +663,11 @@ int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 	#endif
 */
 
-	return 0; 
+	return 0;
 
 }
 
-	
+
 
 
 
