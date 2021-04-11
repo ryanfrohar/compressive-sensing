@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "OMP.h"
+#include "ap_cint.h"
+
+
 
 
 //ENV Variables
@@ -24,7 +27,6 @@ mulColumn: Index of the column being multiplied in the matrix by the vector. (in
 float innerProduct(float vector[M], int mulColumn){
 	
 	float total = 0;  // Used to store the total product value of the multiplication
-	float *index = Rand_Mat + mulColumn;
 	// Loop to multiply all elements of the matrix's selected column by the vector's elements
 	for(int i=0; i<M ; i++) {
 
@@ -135,11 +137,11 @@ int maxIndex(int size, float array[size]){
 Function to calculate the norm of a column in a matrix
 
 */
-float normCol(float *array, int m, int n, int C){
+float normCol(int m, int n, float array[m][n], int C){
 	float sum = 0;  //Initialize norm sum of column value
-	float *fixed = array + C ;  //Copy a specified column from the matrix
+	//float *fixed = array + C ;  //Copy a specified column from the matrix
 	for (int i = 0;i < m;i++){
-		sum = sum + *(fixed + (i*n)) * *(fixed + i*n);  //Increment the sum with the normaized value of each element in the specified column
+		sum = sum + array[i][C] * array[i][C];  //Increment the sum with the normaized value of each element in the specified column
 	}
 	sum=sqrt(sum);  //Square root the summed squared values to get the norm sum
 	return sum;  //Return norm sum
@@ -209,120 +211,121 @@ void transpose(int m, int n, float inputMatrix[m][n], float transposeMatrix[n][m
         }
     }
 }
+/*
+// Function to get cofactor of A[p][q] in temp[][]. n is current
+// dimension of A[][]
+void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n)
+{
+	int i = 0, j = 0;
 
-// Function to get cofactor of A[p][q] in temp[][]. n is current 
-// dimension of A[][] 
-void getCofactor(int sz, int A[sz][sz], int temp[sz][sz], int p, int q, int n) 
-{ 
-	int i = 0, j = 0; 
+	// Looping for each element of the matrix
+	for (int row = 0; row < n; row++)
+	{
+		for (int col = 0; col < n; col++)
+		{
+			// Copying into temporary matrix only those element
+			// which are not in given row and column
+			if (row != p && col != q)
+			{
+				temp[i][j++] = A[row][col];
 
-	// Looping for each element of the matrix 
-	for (int row = 0; row < n; row++) 
-	{ 
-		for (int col = 0; col < n; col++) 
-		{ 
-			// Copying into temporary matrix only those element 
-			// which are not in given row and column 
-			if (row != p && col != q) 
-			{ 
-				temp[i][j++] = A[row][col]; 
-
-				// Row is filled, so increase row index and 
-				// reset col index 
-				if (j == n - 1) 
-				{ 
-					j = 0; 
-					i++; 
-				} 
-			} 
-		} 
-	} 
-} 
-
-/* Recursive function for finding determinant of matrix. 
+				// Row is filled, so increase row index and
+				// reset col index
+				if (j == n - 1)
+				{
+					j = 0;
+					i++;
+				}
+			}
+		}
+	}
+}
+*/
+/* Recursive function for finding determinant of matrix.
 n is current dimension of A[][]. */
-float determinant(int q, float A[q][q], int n) 
-{ 
-	float D = 0; // Initialize result 
+/*
+float determinant(int q, float A[q][q], int n)
+{
+	float D = 0; // Initialize result
 
-	// Base case : if matrix contains single element 
+	// Base case : if matrix contains single element
 	if (n == 1){
-		return A[0][0]; 
+		return A[0][0];
 	}
 
-	float temp[q][q]; // To store cofactors 
+	float temp[q][q]; // To store cofactors
 
-	int sign = 1; // To store sign multiplier 
+	int sign = 1; // To store sign multiplier
 
-	// Iterate for each element of first row 
-	for (int ii = 0; ii < n; ii++) 
-	{ 
-		// Getting Cofactor of A[0][f] 
-		getCofactor(q, A, temp, 0, ii, n); 
-		D += sign * A[0][ii] * determinant(q, temp, n - 1); 
+	// Iterate for each element of first row
+	for (int ii = 0; ii < n; ii++)
+	{
+		// Getting Cofactor of A[0][f]
+		getCofactor(q, A, temp, 0, ii, n);
+		D += sign * A[0][ii] * determinant(q, temp, n - 1);
 
-		// terms are to be added with alternate sign 
-		sign = -sign; 
-	} 
+		// terms are to be added with alternate sign
+		sign = -sign;
+	}
 
-	return D; 
-} 
+	return D;
+}
 
-// Function to get adjoint of A[N][N] in adj[N][N]. 
-void adjoint(int q, float A[q][q], float adj[q][q]) 
-{ 
-	if (q == 1) 
-	{ 
-		adj[0][0] = 1; 
-		return; 
-	} 
+// Function to get adjoint of A[N][N] in adj[N][N].
+void adjoint(int q, float A[q][q], float adj[q][q])
+{
+	if (q == 1)
+	{
+		adj[0][0] = 1;
+		return;
+	}
 
-	// temp is used to store cofactors of A[][] 
+	// temp is used to store cofactors of A[][]
 	int sign = 1;
-	float temp[q][q]; 
+	float temp[q][q];
 
-	for (int i=0; i<q; i++) 
-	{ 
-		for (int j=0; j<q; j++) 
-		{ 
-			// Get cofactor of A[i][j] 
-			getCofactor(q, A, temp, i, j, q); 
+	for (int i=0; i<q; i++)
+	{
+		for (int j=0; j<q; j++)
+		{
+			// Get cofactor of A[i][j]
+			getCofactor(q, A, temp, i, j, q);
 
-			// sign of adj[j][i] positive if sum of row 
-			// and column indexes is even. 
-			sign = ((i+j)%2==0)? 1: -1; 
+			// sign of adj[j][i] positive if sum of row
+			// and column indexes is even.
+			sign = ((i+j)%2==0)? 1: -1;
 
-			// Interchanging rows and columns to get the 
-			// transpose of the cofactor matrix 
-			adj[j][i] = (sign)*(determinant(q, temp, q-1)); 
-		} 
-	} 
-} 
+			// Interchanging rows and columns to get the
+			// transpose of the cofactor matrix
+			adj[j][i] = (sign)*(determinant(q, temp, q-1));
+		}
+	}
+}
 
-// Function to calculate and store inverse, returns false if 
-// matrix is singular 
-int inverse(int q, float A[q][q], float inverse[q][q]) 
-{ 
-	// Find determinant of A[][] 
-	float det = determinant(q, A, q); 
-	if (det == 0){ 
+// Function to calculate and store inverse, returns false if
+// matrix is singular
+int inverse(int q, float A[q][q], float inverse[q][q])
+{
+	// Find determinant of A[][]
+	float det = determinant(q, A, q);
+	if (det == 0){
 		inverse[0][0]= 1/A[0][0];
 		return 1;
-	} 
+	}
 
-	// Find adjoint 
-	float adj[q][q]; 
-	adjoint(q, A, adj); 
+	// Find adjoint
+	float adj[q][q];
+	adjoint(q, A, adj);
 
-	// Find Inverse using formula "inverse(A) = adj(A)/det(A)" 
+	// Find Inverse using formula "inverse(A) = adj(A)/det(A)"
 	for (int i=0; i<q; i++){
 		for (int j=0; j<q; j++){
-			inverse[i][j] = adj[i][j]/((float) det); 
+			inverse[i][j] = adj[i][j]/((float) det);
 		}
 	}
 
-	return 1; 
-} 
+	return 1;
+}
 void magnitude(int p, float matrix1[p], float result[1]){
 	float temp=0.0;
 	for(int i =0; i<p; i++){
@@ -335,7 +338,7 @@ void magnitude(int p, float matrix1[p], float result[1]){
 }
 
 void testMarko(){
-	/**
+
 	int arr[2][3] = {{3,2,4}, {-4,5,1}};
 	int arr1[3][4] = {{3,0,-3,6},{7,5,-4,4},{-2,2,-1,1}};
 	int result[2][4] = {0};
@@ -348,8 +351,9 @@ void testMarko(){
 	int res[2][2] = {0};
 	MatSubtraction(2,2,arr,arr1,res);
 	printMatrix(2,2,res);
-	*/
+
 }
+
 // Driver program 
 int testInverse() { 
 	int A[4][4] = { {5, -2, 2, 7}, 
@@ -369,7 +373,7 @@ int testInverse() {
 
 	return 0; 
 } 
-
+*/
 /**
 
 The QR algotrithm decomposes a randMatSquared matrix (A) into two matrices Q and R by using the Gram-Schmidt process.
@@ -401,7 +405,7 @@ void qr(int n, float q[n][n], float R[n][n]) {
 		}
 
 		//Store norm of Q in R
-		R[m][m] = normCol(q, n, n, m);
+		R[m][m] = normCol(n, n,q, m);
 
 		//Divide Q by norm of Q which is stored in R
 		for (int ip = 0;ip < n;ip++) {
@@ -424,7 +428,7 @@ void backSubstitution(int n, float R[n][n], float d[n], float x_hat[M]) {
 	return;
 }
 
-void compressor(float sigX[N], float xcompressed[M], float phi[M][N]){
+void compressor(float sigX[N][1], float xcompressed[M][1], float phi[M][N]){
 	matMultiplication(M, N, 1, phi, sigX, xcompressed);  //Multiply random matrix with normalized vector that represents the sparse signal with sparsity of 6.  Store into vector y.
 	return;
 }
@@ -468,16 +472,16 @@ int snrTest(float snrValue){
 	return 0;
 }
 
-int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
+int OMP(float randy[M][N], int xsig[M], int reconstructedX[N]){
 	//srand((unsigned int)time(NULL));
 	// populates the starting matrix with random values
 
 	float y[M];
 
 	for (int it = 0;it <M;it++) {
-			y[it] = (float) xsig[it];  //Create a normalized vector with values all <1
+			y[it] =  xsig[it];  //Create a normalized vector with values all <1
 	}
-	
+
 	for (int ro = 0;ro <M;ro++) {
 			for(int co = 0; co < N; co ++){
 					Rand_Mat[ro][co] = randy[ro][co];  //Create a normalized vector with values all <1
@@ -528,7 +532,7 @@ int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 	for (i = 0;i < N;i++){
 		x_hat[i]= 0;
 		indexSet[i] = 99999; //Initialize with some value greater than any real possible value
-		norms[i] = normCol(Rand_Mat, M, N, i); //Calculate norm of column of i
+		//norms[i] = normCol(Rand_Mat, M, N, i); //Calculate norm of column of i
 	}
 
 	for (i = 0;i < M;i++) {
@@ -579,13 +583,13 @@ int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 		}
 
 	
-		transpose(M, NumberFound, rand_Mat_Hat, rand_Mat_Transpose);
+		transpose(M, NumberFound, &rand_Mat_Hat, &rand_Mat_Transpose);
 
 		//printMatrix(NumberFound, M, rand_Mat_Transpose);
 
-		matMultiplication(NumberFound, M, 1, rand_Mat_Transpose, y, transpose_By_Y);
+		matMultiplication(NumberFound, M, 1, &rand_Mat_Transpose, &y, &transpose_By_Y);
 
-		matMultiplication(NumberFound, M, NumberFound, rand_Mat_Transpose, rand_Mat_Hat, rand_Mat_Squared);
+		matMultiplication(NumberFound, M, NumberFound, &rand_Mat_Transpose, &rand_Mat_Hat, &rand_Mat_Squared);
 
 		//printMatrix(NumberFound, NumberFound, rand_Mat_Squared);
 
@@ -619,19 +623,19 @@ int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 				resultQR[i*NumberFound + j] = 0;
 			}
 		}
-		
-		qr(NumberFound, q, resultQR);
+		//hls::qrf<TRANSPOSED_Q, A_ROWS, A_COLS, MATRIX_IN_T, MATRIX_OUT_T>(rand_Mat_Squared, q, ResultQR);
+		qr(NumberFound, &q, &resultQR);
 
 
-		transpose(NumberFound, NumberFound, q, qt);
+		transpose(NumberFound, NumberFound, &q, &qt);
 				
-		matMultiplication(NumberFound, NumberFound, 1, qt, transpose_By_Y, yQt);
+		matMultiplication(NumberFound, NumberFound, 1, &qt, &transpose_By_Y, &yQt);
 
 		for(i=0;i<M;i++){
 			x_hat_temp[i]=0;
 		}
 
-		backSubstitution(NumberFound, resultQR, yQt, x_hat_temp);
+		backSubstitution(NumberFound, &resultQR, yQt, x_hat_temp);
 	
 
 		for ( i = 0;i < NumberFound;i++){
@@ -643,9 +647,9 @@ int OMP(float randy [M][N], int xsig[M], int reconstructedX[N]){
 		
 
 		float A_x_h[M];
-		matMultiplication(M, N, 1, Rand_Mat, x_hat, A_x_h);
+		matMultiplication(M, N, 1, Rand_Mat, &x_hat, &A_x_h);
 
-		matSubtraction(M, 1, y, A_x_h, r); //r = y - A*s_hat;
+		matSubtraction(M, 1, &y, &A_x_h, &r); //r = y - A*s_hat;
 		
 	}
 
