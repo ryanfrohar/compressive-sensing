@@ -8,6 +8,7 @@
 * Sampling
 * Scripts
 * Testing
+* Execution
 * Authors 
 
 ## INTRODUCTION
@@ -26,7 +27,7 @@ To run this project the user will require the following:
 This folder is composed of multiple C files used to run the OMP alogorithm, generate random numbers for the input signal, and test that the algorithm outputs the results that are expected using testbench.
 
 #### Files in the C folder:
-* OMP.c -
+* OMP.c - C code which contains the implementation of the functions required for the OMP algorithm. 
 * OMP.h -
 * OMP_NW.c-
 * phiInput.c -
@@ -35,7 +36,7 @@ This folder is composed of multiple C files used to run the OMP alogorithm, gene
 * testbench.c -
 
 ## HDL
-This folder contains
+This folder contains the files required to convert the OMP algorithm from C code to Verilog HDL in order to be implemented on to the FPGA.
 
 #### Files in the HDL folder:
 * .DS_Store -
@@ -49,25 +50,35 @@ This folder contains
 * target.txt -
 
 ## SPI
-The SPI folder contains
+The SPI folder contains the files used for the implementation SPI protocol which allows for synchronous communication between the the RaspberryPi and FPGA.  
 
 ### Files in the SPI folder:
 * approximation.txt -
 * samples.txt - 
 * spi.py - 
 
-## Sampling 
+## Sampling
+The Sampling folder contains the files required to
 
 ### Files in the Sampling folder:
-
-## SCRIPTS
+* compressed.txt - 
+* compressedSamples.txt - 
+* compressor.c - 
+* phi.txt - 
+* phiGenerator.c - 
+* samples.txt - 
+* sampling.py - 
 
 ## TESTING
-The testing folder
+The testing folder conatins the input signal from the heart rate sensor and the random generator which are used as inputs for the OMP algorithm.
 
 #### Files in the Testing folder:
 * inputSignal.txt -
 * randomGenerator.c -
+* inputSignal.txt - 
+
+## Execution
+
 
 ## AUTHORS
 * Archit Bhatia
