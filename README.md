@@ -39,7 +39,6 @@ This folder is composed of multiple C files used to run the OMP alogorithm, gene
 This folder contains the files required to convert the OMP algorithm from C code to Verilog HDL in order to be implemented on to the FPGA.
 
 #### Files in the HDL folder:
-* .DS_Store -
 * Arty-S7-50-Master.xdc - This is a contraint file which contains a list of the FPGA's pins which connect to the physical pin on the board.
 * inputSensor.v - This file implements the input pin from which the FPGA is connect to the Raspberry Pi. 
 * inputSensorTest.v -
