@@ -27,23 +27,23 @@ To run this project the user will require the following:
 This folder is composed of multiple C files used to run the OMP alogorithm, generate random numbers for the input signal, and test that the algorithm outputs the results that are expected using testbench.
 
 #### Files in the C folder:
-* OMP.c - C code which contains the implementation of the functions required for the OMP algorithm. 
-* OMP.h -
+* OMP.c - This file contains the C code which contains the implementation of the functions required for the OMP algorithm. 
+* OMP.h - This is the header file for the OMP algorithm, it contains the initial definitions for the OMP.c file.
 * OMP_NW.c-
-* phiInput.c -
-* phi.txt -
+* phiInput.c - Contains the function to implement the random matrix phi.
+* phi.txt - This text file contain the compressed signal as one line. 
 * phiGenerator.c -
-* testbench.c -
+* testbench.c - This file contains the test case used for the implementation of the OMP algorithm. Done by comparing the compressed signal with the undersampled one.
 
 ## HDL
 This folder contains the files required to convert the OMP algorithm from C code to Verilog HDL in order to be implemented on to the FPGA.
 
 #### Files in the HDL folder:
 * .DS_Store -
-* Arty-S7-50-Master.xdc -
-* inputSensor.v -
+* Arty-S7-50-Master.xdc - This is a contraint file which contains a list of the FPGA's pins which connect to the physical pin on the board.
+* inputSensor.v - This file implements the input pin from which the FPGA is connect to the Raspberry Pi. 
 * inputSensorTest.v -
-* target.txt-
+* target.txt- 
 * fpgaDesign.v -
 * sending.v -
 * signalProcess.v -
@@ -61,7 +61,7 @@ The SPI folder contains the files used for the implementation SPI protocol which
 The Sampling folder contains the files required to
 
 ### Files in the Sampling folder:
-* compressed.txt - 
+* compressed.txt - This text file contains the compressed signal values. 
 * compressedSamples.txt - 
 * compressor.c - 
 * phi.txt - 
@@ -73,6 +73,7 @@ The Sampling folder contains the files required to
 The testing folder conatins the input signal from the heart rate sensor and the random generator which are used as inputs for the OMP algorithm.
 
 #### Files in the Testing folder:
+* inputSignal.dat - 
 * inputSignal.txt -
 * randomGenerator.c -
 * inputSignal.txt - 
