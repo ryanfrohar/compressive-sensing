@@ -29,7 +29,7 @@ This folder is composed of multiple C files used to run the OMP alogorithm, gene
 #### Files in the C folder:
 * OMP.c - This file contains the C code which contains the implementation of the functions required for the OMP algorithm. 
 * OMP.h - This is the header file for the OMP algorithm, it contains the initial definitions for the OMP.c file.
-* OMP_NW.c-
+* OMP_NW.c- 
 * phiInput.c - Contains the function to implement the random matrix phi.
 * phi.txt - This text file contain the compressed signal as one line. 
 * phiGenerator.c -
@@ -40,8 +40,6 @@ This folder contains the files required to convert the OMP algorithm from C code
 
 #### Files in the HDL folder:
 * Arty-S7-50-Master.xdc - This is a contraint file which contains a list of the FPGA's pins which connect to the physical pin on the board.
-* inputSensor.v - This file implements the input pin from which the FPGA is connect to the Raspberry Pi. 
-* inputSensorTest.v -
 * target.txt- 
 * fpgaDesign.v -
 * sending.v -
