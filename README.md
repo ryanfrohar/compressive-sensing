@@ -32,7 +32,7 @@ This folder is composed of multiple C files used to run the OMP alogorithm, gene
 * OMP_NW.c- 
 * phiInput.c - Contains the function to implement the random matrix phi.
 * phi.txt - This text file contain the compressed signal as one line. 
-* phiGenerator.c -
+* phiGenerator.c - This file contains the main function that generates the random coeff and phi.txt.
 * testbench.c - This file contains the test case used for the implementation of the OMP algorithm. Done by comparing the compressed signal with the undersampled one.
 
 ## HDL
@@ -40,7 +40,7 @@ This folder contains the files required to convert the OMP algorithm from C code
 
 #### Files in the HDL folder:
 * Arty-S7-50-Master.xdc - This is a contraint file which contains a list of the FPGA's pins which connect to the physical pin on the board.
-* target.txt- 
+* target.txt-  
 * fpgaDesign.v -
 * sending.v -
 * signalProcess.v -
@@ -51,7 +51,7 @@ The SPI folder contains the files used for the implementation SPI protocol which
 
 ### Files in the SPI folder:
 * approximation.txt -
-* samples.txt - 
+* samples.txt - This text file stores the sampled data that is outputted from the sampling.py script.  
 * spi.py - 
 
 ## Sampling
@@ -64,7 +64,7 @@ The Sampling folder contains the files required to
 * phi.txt - 
 * phiGenerator.c - 
 * samples.txt - 
-* sampling.py - 
+* sampling.py - This file contains the python implementation of sampling from the GPIO pin 18 where the heart rate sensor is connected. 
 
 ## TESTING
 The testing folder conatins the input signal from the heart rate sensor and the random generator which are used as inputs for the OMP algorithm.
