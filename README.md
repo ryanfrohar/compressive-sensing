@@ -72,7 +72,7 @@ The testing folder conatins the input signal from the heart rate sensor and the 
 #### Files in the Testing folder:
 * inputSignal.dat - 
 * inputSignal.txt -
-* randomGenerator.c - This file contains the function used to generate random numbers for testing. 
+* randomGenerator.c - This file contains the function used to generate the random input signal for testing the OMP algorithm. 
 
 ## Execution
 
