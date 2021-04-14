@@ -50,9 +50,9 @@ This folder contains the files required to convert the OMP algorithm from C code
 The SPI folder contains the files used for the implementation SPI protocol which allows for synchronous communication between the the RaspberryPi and FPGA.  
 
 ### Files in the SPI folder:
-* approximation.txt -
+* approximation.txt - This text file shows the generated approximated signal.
 * samples.txt - This text file stores the sampled data that is outputted from the sampling.py script.  
-* spi.py - 
+* spi.py - This python file implements the SPI protocol on the Raspberry Pi. 
 
 ## Sampling
 The Sampling folder contains the files required to
@@ -60,10 +60,10 @@ The Sampling folder contains the files required to
 ### Files in the Sampling folder:
 * compressed.txt - This text file contains the compressed signal values. 
 * compressedSamples.txt - 
-* compressor.c - 
-* phi.txt - 
-* phiGenerator.c - 
-* samples.txt - 
+* compressor.c - This file is used to compress the signal and perform linear dimensionality reduction on the newly acquired signal. 
+* phi.txt - This text file contain the compressed signal as one line.
+* phiGenerator.c - This file contains the main function that generates the random coeff and phi.txt. 
+* samples.txt - This text file stores the sampled data that is outputted from the sampling.py script. 
 * sampling.py - This file contains the python implementation of sampling from the GPIO pin 18 where the heart rate sensor is connected. 
 
 ## TESTING
@@ -72,8 +72,7 @@ The testing folder conatins the input signal from the heart rate sensor and the 
 #### Files in the Testing folder:
 * inputSignal.dat - 
 * inputSignal.txt -
-* randomGenerator.c -
-* inputSignal.txt - 
+* randomGenerator.c - This file contains the function used to generate random numbers for testing. 
 
 ## Execution
 
